@@ -1,0 +1,60 @@
+﻿<Window x:Class="TourPlanner.Views.LogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:TourPlanner.Views"
+        mc:Ignorable="d"
+        Title="LogWindow" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Eingabebereich für neuen Log -->
+        <StackPanel Orientation="Vertical" Grid.Row="0" Margin="10">
+            <Label Content="Date"/>
+            <DatePicker/>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <StackPanel Orientation="Vertical" Width="200">
+                    <Label Content="Total Distance"/>
+                    <TextBox Text="1.2 km"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Width="200">
+                    <Label Content="Total Time"/>
+                    <TextBox Text="90 min"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <StackPanel Orientation="Vertical" Width="200">
+                    <Label Content="Difficulty"/>
+                    <ComboBox>
+                        <ComboBoxItem Content="easy"/>
+                        <ComboBoxItem Content="medium"/>
+                        <ComboBoxItem Content="hard"/>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Width="200">
+                    <Label Content="Rating"/>
+                    <TextBox Text="10 /10"/>
+                </StackPanel>
+            </StackPanel>
+            <Label Content="Comment"/>
+            <TextBox Height="100" TextWrapping="Wrap"/>
+            <Button Content="Save Log" Margin="10" HorizontalAlignment="Right"/>
+        </StackPanel>
+
+        <!-- DataGrid-Anzeige für gespeicherte Logs -->
+        <DataGrid Grid.Row="1" Margin="10" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding Date}"/>
+                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}"/>
+                <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}"/>
+                <DataGridTextColumn Header="Total Distance" Binding="{Binding TotalDistance}"/>
+                <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime}"/>
+                <DataGridTextColumn Header="Rating" Binding="{Binding Rating}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

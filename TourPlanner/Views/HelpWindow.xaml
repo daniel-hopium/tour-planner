@@ -1,0 +1,30 @@
+﻿<Window x:Class="TourPlanner.Views.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:TourPlanner.Views"
+        mc:Ignorable="d"
+        Title="Help" Height="350" Width="350"
+        ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+    <Grid Margin="10">
+        <StackPanel>
+            <Label Content="Help" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+            <ListBox>
+                <ListBoxItem>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Add Tour" Style="{StaticResource IconButtonStyle}" />
+                        <TextBlock Text="Button to get to form to create new tour" VerticalAlignment="Center" Margin="5"/>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Summarize" Style="{StaticResource IconButtonStyle}" />
+                        <TextBlock Text="Description" VerticalAlignment="Center" Margin="5"/>
+                    </StackPanel>
+                </ListBoxItem>
+                <!-- Add more items similarly -->
+            </ListBox>
+        </StackPanel>
+    </Grid>
+</Window>
