@@ -11,6 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # Bind-Mount for intit file for DB
+      - ./postgres-init:/docker-entrypoint-initdb.d
       - pgdata:/var/lib/postgresql/data
 
 volumes:
