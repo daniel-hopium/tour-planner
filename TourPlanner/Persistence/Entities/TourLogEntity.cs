@@ -44,4 +44,5 @@ public class TourLogEntity
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column("created")]
     public DateTime Created { get; set; }
+    
 }

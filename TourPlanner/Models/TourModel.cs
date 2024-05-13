@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using TourPlanner.Mapper;
 
 namespace TourPlanner.Models;
 
@@ -27,7 +28,7 @@ public class TourModel
     public int Popularity {  get; set; }
     public int ChildFriendliness { get; set; }
     public bool? IsNew;
-    public ObservableCollection<TourLogEntity> Logs { get; set; }
+    public ObservableCollection<TourLogModel> Logs { get; set; }
 
     //public TourModel(int id, string name, string description, string fromAddress, string toAddress, string transportType, double distance, int estimatedTime, string image, int popularity, int childFriendliness)
     public TourModel(TourEntity tourEntity)
@@ -43,8 +44,14 @@ public class TourModel
         Image = tourEntity.Image;
         Popularity = tourEntity.Popularity;
         ChildFriendliness = tourEntity.ChildFriendliness;
-        Logs = new ObservableCollection<TourLogEntity>(tourEntity.Logs?.ToList() ?? new List<TourLogEntity>());
+        Logs = new ObservableCollection<TourLogModel>(
+            tourEntity.Logs?.Select(log => TourLogMapper.MapToModel(log)).ToList() ?? new List<TourLogModel>()
+        );
+
+        
     }
+
+    
 
     public TourModel() {
         Id = 0;

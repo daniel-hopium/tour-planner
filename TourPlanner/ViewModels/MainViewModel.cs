@@ -29,8 +29,8 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(Tours));
         }}
 
-        private ObservableCollection<TourLogEntity> _tourLogs; //Entity...
-        private ObservableCollection<TourLogEntity> TourLogs
+        private ObservableCollection<TourLogModel> _tourLogs; //Entity...
+        public ObservableCollection<TourLogModel> TourLogs
         {
             get => _tourLogs;
             set {
@@ -201,7 +201,7 @@ namespace TourPlanner.ViewModels
                     OnPropertyChanged(nameof(ExpandedTour));
                     if (_expandedTour != null) {
                         _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
-                        LoadLogsForExpandedTour(_expandedTour);  // Load logs when a tour is expanded
+                        LoadLogsForExpandedTour(_expandedTour.Tour);  // Load logs when a tour is expanded
         }}}}
 
         private void TourViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -214,10 +214,11 @@ namespace TourPlanner.ViewModels
                     ExpandedTour = null;
         }}}
     
-        private async void LoadLogsForExpandedTour(TourViewModel tourViewModel)
+        private async void LoadLogsForExpandedTour(TourModel tourModel)
         {
-            var logs = await _tourRepository.GetLogsByTourIdAsync(tourViewModel.Tour.Id);
-            tourViewModel.Tour.Logs = new ObservableCollection<TourLogEntity>(logs.Select(log => new TourLogEntity()));
+            var logs = await _tourRepository.GetLogsByTourIdAsync(tourModel.Id);
+            _tourLogs = new ObservableCollection<TourLogModel>(logs.Select(log => new TourLogModel(log)));
+            _expandedTour.Tour.Logs = new ObservableCollection<TourLogModel>(logs.Select(log => new TourLogModel(log)));
         }
         
         private void ExpandTour(object parameter)

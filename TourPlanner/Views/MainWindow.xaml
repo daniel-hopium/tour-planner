@@ -133,7 +133,7 @@
                     </Style>
                 </TabControl.Resources>
                 <TabItem Header="Route">
-                    <Image Source="{Binding ExpandedTour.Image}" />
+                    <Image Source="{Binding ExpandedTour.Tour.Image}" />
                 </TabItem>
                 <TabItem Header="Tour Logs">
                     <Grid>
