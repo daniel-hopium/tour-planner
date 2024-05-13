@@ -20,7 +20,8 @@ namespace TourPlanner.Persistence.Entities
         public int Zip {  get; set; }
         [Column("city")]
         public string City {  get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column("created")]
-        public DateTime Created {  get; set; }
+        public DateTime? Created {  get; set; }
     }
 }

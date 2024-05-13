@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:TourPlanner.Views"
         xmlns:entities="clr-namespace:TourPlanner.Persistence.Entities"
         xmlns:viewModel="clr-namespace:TourPlanner.ViewModels"
+        xmlns:vmUtils="clr-namespace:TourPlanner.ViewModels.Utils"
         xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
         mc:Ignorable="d"
         Title="Tour Planner" Height="800" Width="1400">
@@ -30,7 +31,18 @@
                 </TreeView.ItemContainerStyle>
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate DataType="{x:Type viewModel:TourViewModel}">
-                        <TreeViewItem Header="{Binding Name}" IsExpanded="{Binding IsExpanded, Mode=TwoWay}" Tag="{Binding Id}">
+                        <TreeViewItem IsExpanded="{Binding IsExpanded, Mode=TwoWay}" Tag="{Binding Id}">
+                            <TreeViewItem.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <fa:ImageAwesome Icon="Pencil" Foreground="Blue" Margin="5,3" x:Name="TourEdit" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="15" Width="15" RenderTransformOrigin="1.724,0.347"/>
+                                        <fa:ImageAwesome Icon="Print" Foreground="Green" Margin="5,3" x:Name="TourReport" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="15" Width="15" />
+                                        <fa:ImageAwesome Icon="FileArchiveOutline" Foreground="Gold" x:Name="TourExport" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Margin="5,3" Height="15" Width="15" />
+                                        <fa:ImageAwesome Icon="Trash" Foreground="Red" Margin="5,3" x:Name="TourDelete" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="15" Width="15" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </TreeViewItem.Header>
                             <TextBlock Text="{Binding Description}" />
                             <TextBlock Height="5"/>
                             <StackPanel Orientation="Horizontal">
@@ -79,11 +91,11 @@
             <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Margin="10">
                 <Button Content="Add Log" Click="LogButton_Click" Margin="5"/>
                 <Button Content="Summarize" Margin="5"/>
-                <Button Content="Add Tour" Margin="5"/>
+                <Button Content="Add Tour" Click="AddTour_Click" Margin="5"/>
                 <Button Content="Help" Click="HelpButton_Click" Margin="5"/>
             </StackPanel>
 
-            <TabControl Grid.Row="1" Margin="10">
+            <TabControl x:Name="MainTabControl" Grid.Row="1" Margin="10">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
                         <Setter Property="Template">
@@ -130,90 +142,135 @@
                         <!-- Hier könnten Spalten spezifiziert werden -->
                     </DataGrid>
                 </TabItem>
-                <TabItem x:Name="Tour">
+                <TabItem x:Name="Tour" IsEnabled="False">
                     <!--IsEnabled="False"-->
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="true">
-                                            <Setter Property="TextElement.Foreground" Value="white"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="false">
-                                            <Setter Property="TextElement.Foreground" Value="blue"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding IsEnabled, ElementName=Tour}" Value="false">
-                                            <Setter Property="TextElement.Foreground" Value="gray"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <TextBlock Text="Tour" Margin="0 0 5 0"/>
-                            <fa:ImageAwesome Icon="Pencil" x:Name="FontAwesome" Height="15" Width="14" RenderTransformOrigin="1.724,0.347">
-                                <fa:ImageAwesome.Style>
-                                    <Style TargetType="fa:ImageAwesome">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="true">
-                                                <Setter Property="Foreground" Value="white"/>
+                                                <Setter Property="TextElement.Foreground" Value="white"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="false">
-                                                <Setter Property="Foreground" Value="blue"/>
+                                                <Setter Property="TextElement.Foreground" Value="blue"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsEnabled, ElementName=Tour}" Value="false">
-                                                <Setter Property="Foreground" Value="gray"/>
+                                                <Setter Property="TextElement.Foreground" Value="gray"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </fa:ImageAwesome.Style>
-                            </fa:ImageAwesome>
+                                </StackPanel.Style>
+                                <TextBlock Text="Tour" Margin="0 0 5 0"/>
+                                <fa:ImageAwesome Icon="Pencil" x:Name="FontAwesome" Height="15" Width="14" RenderTransformOrigin="1.724,0.347">
+                                    <fa:ImageAwesome.Style>
+                                        <Style TargetType="fa:ImageAwesome">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="true">
+                                                    <Setter Property="Foreground" Value="white"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="false">
+                                                    <Setter Property="Foreground" Value="blue"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsEnabled, ElementName=Tour}" Value="false">
+                                                    <Setter Property="Foreground" Value="gray"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </fa:ImageAwesome.Style>
+                                </fa:ImageAwesome>
+                            </StackPanel>
+                        </TabItem.Header>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <!-- Eingabebereich für Tour -->
+                        <StackPanel Orientation="Vertical" Margin="30">
+                            <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="0,0,45,0">
+                                    <Label Content="Name"/>
+                                    <TextBox x:Name="FormNameTour" Text="{Binding FormTour.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MinWidth="140" Width="440" HorizontalAlignment="Center" Height="22"/>
+                                    <TextBlock FontSize="10" Foreground="Red">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding (Validation.HasError), ElementName=FormNameTour}" Value="True">
+                                                        <Setter Property="Text" Value="{Binding (Validation.Errors)[0].ErrorContent, ElementName=FormNameTour, ValidatesOnDataErrors=True}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="Transport Type"/>
+                                    <ComboBox x:Name="FormTypeTour" SelectedItem="{Binding FormTour.TransportType, Mode=TwoWay}" ItemsSource="{Binding TransportTypes}" MinWidth="140" Width="440" />
+                                    <TextBlock FontSize="10" Foreground="Red"/>
+                                </StackPanel>
+                            </WrapPanel>
+                            <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="0,0,45,0">
+                                    <Label Content="From"/>
+                                    <TextBox x:Name="FormFromAddressTour" Text="{Binding FormTour.FromAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MinWidth="140" Width="440" HorizontalAlignment="Center" Height="22"/>
+                                    <TextBlock FontSize="10" Foreground="Red">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding (Validation.HasError), ElementName=FormFromAddressTour}" Value="True">
+                                                        <Setter Property="Text" Value="{Binding (Validation.Errors)[0].ErrorContent, ElementName=FormFromAddressTour}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="To"/>
+                                    <TextBox x:Name="FormToAddressTour" Text="{Binding FormTour.ToAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MinWidth="140" Width="440" HorizontalAlignment="Center" Height="22"/>
+                                    <TextBlock FontSize="10" Foreground="Red">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding (Validation.HasError), ElementName=FormToAddressTour}" Value="True">
+                                                        <Setter Property="Text" Value="{Binding (Validation.Errors)[0].ErrorContent, ElementName=FormToAddressTour}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </WrapPanel>
+
+                            <StackPanel Orientation="Vertical" MaxWidth="925">
+                                <Label Content="Description"/>
+                                <TextBox x:Name="FormDescriptionTour" Text="{Binding FormTour.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" MinHeight="100" TextWrapping="Wrap" />
+                                <TextBlock FontSize="10" Foreground="Red">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding (Validation.HasError), ElementName=FormDescriptionTour}" Value="True">
+                                                    <Setter Property="Text" Value="{Binding (Validation.Errors)[0].ErrorContent, ElementName=FormDescriptionTour}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <Button Content="Save Tour" Command="{Binding SaveCommand}" Margin="10" Padding="8" HorizontalAlignment="Center" Background="blue" Foreground="white"/>
+
+                            <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                                <StackPanel Orientation="Vertical" Margin="0,0,45,0">
+                                    <Label Content="Total Distance (km)"/>
+                                    <TextBox Text="{Binding FormTour.Distance, Mode=TwoWay}" MinWidth="140" Width="440" HorizontalAlignment="Stretch"  Height="22" IsEnabled="False" />
+                                </StackPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="Estimated Time (minutes)"/>
+                                    <TextBox Text="{Binding FormTour.EstimatedTime, Mode=TwoWay}" MinWidth="140" Width="440"  HorizontalAlignment="Stretch" Height="22" IsEnabled="False" />
+                                </StackPanel>
+                            </WrapPanel>
+
+                            <Image Source="{Binding FormTour.Image}" MaxWidth="925" Margin="0 20"/>
                         </StackPanel>
-                    </TabItem.Header>
-
-                    <!-- Eingabebereich für Tour -->
-                    <StackPanel Orientation="Vertical" Margin="30">
-                        <WrapPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <StackPanel Orientation="Vertical" Margin="0,0,45,0">
-                                <Label Content="Name"/>
-                                <TextBox MinWidth="150" Width="450" HorizontalAlignment="Center" Height="22"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Transport Type"/>
-                                <ComboBox MinWidth="150" Width="450">
-                                    <ComboBoxItem Content="bike"/>
-                                    <ComboBoxItem Content="hike"/>
-                                    <ComboBoxItem Content="running"/>
-                                    <ComboBoxItem Content="vacation"/>
-                                </ComboBox>
-                            </StackPanel>
-                        </WrapPanel>
-                        <WrapPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <StackPanel Orientation="Vertical" Margin="0,0,45,0">
-                                <Label Content="From"/>
-                                <TextBox MinWidth="150" Width="450" HorizontalAlignment="Center" Height="22"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="To"/>
-                                <TextBox MinWidth="150" Width="450" HorizontalAlignment="Center" Height="22"/>
-                            </StackPanel>
-                        </WrapPanel>
-                        
-                        <Label Content="Description"/>
-                        <TextBox MinHeight="100" TextWrapping="Wrap"/>
-
-                        <WrapPanel Orientation="Horizontal" Margin="0,10,0,0">
-                            <StackPanel Orientation="Vertical" Margin="0,0,45,0">
-                                <Label Content="Total Distance"/>
-                                <TextBox MinWidth="150" Width="450" Text=" km " TextAlignment="Right"  HorizontalAlignment="Center" Height="22"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="Total Time"/>
-                                <TextBox MinWidth="150" Width="450" Text=" min " TextAlignment="Right"  HorizontalAlignment="Center" Height="22"/>
-                            </StackPanel>
-                        </WrapPanel>
-
-                        <Button Content="Save Tour" Margin="10" HorizontalAlignment="Left" Background="blue" Foreground="white"/>
-                    </StackPanel>
+                    </ScrollViewer>
                 </TabItem>
             </TabControl>
         </Grid>

@@ -33,6 +33,7 @@ public class TourEntity
     public int Popularity { get; set; }
     [Column("child_friendliness")]
     public int ChildFriendliness {  get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column("created")]
     public DateTime Created { get; set; }
 }

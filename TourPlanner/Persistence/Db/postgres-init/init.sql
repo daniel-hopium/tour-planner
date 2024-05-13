@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS addresses (
     housenumber         VARCHAR(255),
     zip                 INT             NOT NULL,
     city                VARCHAR(255)    NOT NULL,
-    created             TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tours (
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS tours (
     image               VARCHAR(255)    NOT NULL,
     popularity          INT             NOT NULL DEFAULT 0,
     child_friendliness  INT             NOT NULL DEFAULT 0,
-    created             TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tourlogs (
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS tourlogs (
     distance            FLOAT,
     total_time          INT             NOT NULL,
     rating              INT             NOT NULL,
-    created             TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Test- Seed
