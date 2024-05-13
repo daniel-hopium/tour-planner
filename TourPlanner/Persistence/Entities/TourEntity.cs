@@ -3,11 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 using System.Net.Sockets;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 namespace TourPlanner.Persistence.Entities;
 
 [Table("tours")]
 public class TourEntity
 {
+    [Key]
     [Column("id")]
     public int Id { get; set; }
     [Column("name")]
@@ -36,4 +40,6 @@ public class TourEntity
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column("created")]
     public DateTime Created { get; set; }
+    
+    public virtual ICollection<TourLogEntity> Logs { get; set; } = new List<TourLogEntity>();
 }

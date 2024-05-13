@@ -13,6 +13,7 @@ namespace TourPlanner.Persistence.Utils
     public class TourPlannerDbContext : DbContext
     {
         public DbSet<TourEntity> Tours { get; set; }
+        public DbSet<TourLogEntity> TourLogs { get; set; }
         public DbSet<AddressEntity> Addresses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -31,6 +32,11 @@ namespace TourPlanner.Persistence.Utils
                 .HasOne(t => t.ToAddress)
                 .WithMany()
                 .HasForeignKey(t => t.ToAddressId);
+            modelBuilder.Entity<TourLogEntity>()
+                .HasOne(t => t.Tour)
+                .WithMany(t => t.Logs)
+                .HasForeignKey(t => t.TourId); 
         }
+        
     }
 }

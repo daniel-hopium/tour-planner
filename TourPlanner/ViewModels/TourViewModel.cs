@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -9,18 +10,36 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TourPlanner.Models;
 using TourPlanner.Persistence.Entities;
+using TourPlanner.Persistence.Repository;
+using TourPlanner.Persistence.Utils;
 
 namespace TourPlanner.ViewModels
 {
     public class TourViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
     {
         private TourModel _tour;
+
         public TourModel Tour
         {
-            get {  return _tour; }
+            get { return _tour; }
         }
 
+        private ObservableCollection<TourLogViewModel> _tourLogs;
+
+        public ObservableCollection<TourLogViewModel> TourLogs
+        {
+            get => _tourLogs;
+            set
+            {
+                _tourLogs = value;
+                OnPropertyChanged(nameof(TourLogs));
+            }
+        }
+
+
         private bool _isExpanded;
+
+        private readonly TourRepository _tourRepository = new TourRepository(new TourPlannerDbContext());
 
         public TourViewModel(TourModel tour)
         {
@@ -41,90 +60,149 @@ namespace TourPlanner.ViewModels
         }
 
 
-        public int Id { 
-            get {  return _tour.Id; }
-            set {  _tour.Id = value;
+        public int Id
+        {
+            get { return _tour.Id; }
+            set
+            {
+                _tour.Id = value;
                 OnPropertyChanged(nameof(Id));
-        }}
-        public string Name { 
-            get {  return _tour.Name; } 
-            set {
+            }
+        }
+
+        public string Name
+        {
+            get { return _tour.Name; }
+            set
+            {
                 _tour.Name = value;
                 ValidateProperty(nameof(Name));
                 OnPropertyChanged(nameof(Name));
-        }}
-        public string Description { 
-            get { return _tour.Description; }
-            set {
-                _tour.Description = value;
-                ValidateProperty(nameof(Description));
-                OnPropertyChanged(nameof(Description));                
-        }}
-        public string FromAddress {
-            get { return _tour.FromAddress; }
-            set { 
-                _tour.FromAddress = value;
-                ValidateProperty(nameof(FromAddress));
-                OnPropertyChanged(nameof(FromAddress));               
             }
         }
-        public string ToAddress {
-            get { return _tour.ToAddress; } 
-            set {  
+
+        public string Description
+        {
+            get { return _tour.Description; }
+            set
+            {
+                _tour.Description = value;
+                ValidateProperty(nameof(Description));
+                OnPropertyChanged(nameof(Description));
+            }
+        }
+
+        public string FromAddress
+        {
+            get { return _tour.FromAddress; }
+            set
+            {
+                _tour.FromAddress = value;
+                ValidateProperty(nameof(FromAddress));
+                OnPropertyChanged(nameof(FromAddress));
+            }
+        }
+
+        public string ToAddress
+        {
+            get { return _tour.ToAddress; }
+            set
+            {
                 _tour.ToAddress = value;
                 ValidateProperty(nameof(ToAddress));
-                OnPropertyChanged(nameof(ToAddress));               
-        }}
-        public TourPlanner.Models.TransportType TransportType {  
-            get { return _tour.TransportType; } 
-            set {
+                OnPropertyChanged(nameof(ToAddress));
+            }
+        }
+
+        public TourPlanner.Models.TransportType TransportType
+        {
+            get { return _tour.TransportType; }
+            set
+            {
                 _tour.TransportType = value;
                 OnPropertyChanged(nameof(TransportType));
-        }}
-        public double Distance {
-            get { return _tour.Distance; } 
-            set {
+            }
+        }
+
+        public double Distance
+        {
+            get { return _tour.Distance; }
+            set
+            {
                 _tour.Distance = value;
                 OnPropertyChanged(nameof(Distance));
-        }}
-        public int EstimatedTime { 
-            get { return _tour.EstimatedTime; } 
-            set {  
+            }
+        }
+
+        public int EstimatedTime
+        {
+            get { return _tour.EstimatedTime; }
+            set
+            {
                 _tour.EstimatedTime = value;
                 OnPropertyChanged(nameof(EstimatedTime));
-        }}
-        public string Image {
+            }
+        }
+
+        public string Image
+        {
             get { return _tour.Image; }
-            set {
+            set
+            {
                 _tour.Image = value;
                 OnPropertyChanged(nameof(Image));
-        }}
-        public int Popularity { 
-            get { return _tour.Popularity; } 
-            set {  
+            }
+        }
+
+        public int Popularity
+        {
+            get { return _tour.Popularity; }
+            set
+            {
                 _tour.Popularity = value;
                 OnPropertyChanged(nameof(Popularity));
-        }}
-        public int ChildFriendliness {
-            get { return _tour.ChildFriendliness; } 
-            set {  
+            }
+        }
+
+        public int ChildFriendliness
+        {
+            get { return _tour.ChildFriendliness; }
+            set
+            {
                 _tour.ChildFriendliness = value;
                 OnPropertyChanged(nameof(ChildFriendliness));
-        }}
+            }
+        }
+
+        public async void LoadLogs()
+        {
+            var logs = await _tourRepository.GetLogsByTourIdAsync(Id);
+            TourLogs = new ObservableCollection<TourLogViewModel>(logs.Select(log => new TourLogViewModel(new TourLogModel(log))));
+            
+            
+        }
+
+        public void ClearLogs()
+        {
+            TourLogs.Clear();
+            _tourLogs.Clear();
+        }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
         protected virtual void OnErrorsChanged(string propertyName)
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
-   
+
 
         public IEnumerable GetErrors(string propertyName)
         {
@@ -159,13 +237,14 @@ namespace TourPlanner.ViewModels
         }
 
         public bool HasErrors => GetErrors("Name").OfType<string>().Any() ||
-                          GetErrors("Description").OfType<string>().Any() ||
-                          GetErrors("FromAddress").OfType<string>().Any() ||
-                          GetErrors("ToAddress").OfType<string>().Any(); //OnPropertyChanged(nameof(Description)); 
+                                 GetErrors("Description").OfType<string>().Any() ||
+                                 GetErrors("FromAddress").OfType<string>().Any() ||
+                                 GetErrors("ToAddress").OfType<string>()
+                                     .Any(); //OnPropertyChanged(nameof(Description)); 
 
         private void ValidateProperty(string propertyName)
         {
-            OnErrorsChanged(propertyName);           
+            OnErrorsChanged(propertyName);
         }
     }
 }

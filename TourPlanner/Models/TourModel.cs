@@ -2,6 +2,10 @@
 using System.Xml.Linq;
 using TourPlanner.Persistence.Entities;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using TourPlanner.Mapper;
 
 namespace TourPlanner.Models;
 
@@ -38,8 +42,10 @@ public class TourModel
         EstimatedTime = tourEntity.EstimatedTime;
         Image = tourEntity.Image;
         Popularity = tourEntity.Popularity;
-        ChildFriendliness = tourEntity.ChildFriendliness;
+        ChildFriendliness = tourEntity.ChildFriendliness; 
     }
+
+    
 
     public TourModel() {
         Id = 0;

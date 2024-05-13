@@ -10,7 +10,9 @@ using FontAwesome.WPF;
 using System.Windows.Media;
 using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Input;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using TourPlanner.Models;
 
 
 namespace TourPlanner.Views
@@ -106,13 +108,48 @@ namespace TourPlanner.Views
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             HelpWindow helpWindow = new HelpWindow();
+            helpWindow.Owner = this;
+            helpWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             helpWindow.ShowDialog(); // This shows the Help window as a modal dialog
         }
+        
 
-        private void LogButton_Click(object sender, RoutedEventArgs e)
+        private void AddLog_Click(object sender, RoutedEventArgs e)
         {
-            LogWindow logWindow = new LogWindow();
-            logWindow.ShowDialog(); // This shows the Help window as a modal dialog
+            _viewModel.AddLogCommand.Execute(sender);
+        }
+
+        private void TourLogEdit_OnClick(object sender, RoutedEventArgs e)
+        {
+            // Get the button that was clicked
+            Button editButton = sender as Button;
+            if (editButton != null)
+            {
+                // Retrieve the TourLog object from the DataContext of the button
+                TourLogViewModel logToEdit = editButton.DataContext as TourLogViewModel;
+                if (logToEdit != null)
+                {
+                    // Perform the deletion or any other action
+                    _viewModel.EditLogCommand.Execute(logToEdit);
+                }
+            }
+        }
+
+        private void TourLogDelete_OnClick(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Delete Button clicked");
+            // Get the button that was clicked
+            Button deleteButton = sender as Button;
+            if (deleteButton != null)
+            {
+                // Retrieve the TourLog object from the DataContext of the button
+                TourLogViewModel logToDelete = deleteButton.DataContext as TourLogViewModel;
+                if (logToDelete != null)
+                {
+                    // Perform the deletion or any other action
+                    _viewModel.DeleteLogCommand.Execute(logToDelete);
+                }
+            }
         }
     }
 }
