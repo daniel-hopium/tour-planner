@@ -110,13 +110,5 @@ namespace TourPlanner.Views
             helpWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             helpWindow.ShowDialog(); // This shows the Help window as a modal dialog
         }
-
-        private void AddLogButton_Click(object sender, RoutedEventArgs e)
-        {
-            LogWindow logWindow = new LogWindow();
-            logWindow.Owner = this;
-            logWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            logWindow.ShowDialog(); // This shows the Help window as a modal dialog
-        }
     }
 }

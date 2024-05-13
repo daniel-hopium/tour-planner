@@ -141,15 +141,35 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Button Content="Add Log" Click="AddLogButton_Click" HorizontalAlignment="Center" Margin="10"/>
-                        <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.Logs}" AutoGenerateColumns="False" CanUserAddRows="True">
+                        <Button Content="Add Log" Command="{Binding SaveLogCommand}" HorizontalAlignment="Center" Margin="10"/>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.Tour.Logs}" AutoGenerateColumns="False" CanUserAddRows="True">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date}"/>
+                                <DataGridTemplateColumn Header="Edit" Width="SizeToCells" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding EditLogCommand}">
+                                                <fa:ImageAwesome Icon="Pencil" Foreground="Black" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                
+                                <DataGridTextColumn Header="TourDate" Binding="{Binding TourDate}"/>
                                 <DataGridTextColumn Header="Comment" Binding="{Binding Comment}"/>
                                 <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}"/>
-                                <DataGridTextColumn Header="Total Distance" Binding="{Binding TotalDistance}"/>
+                                <DataGridTextColumn Header="Distance" Binding="{Binding Distance}"/>
                                 <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime}"/>
                                 <DataGridTextColumn Header="Rating" Binding="{Binding Rating}"/>
+                                
+                                <DataGridTemplateColumn Header="Delete" Width="SizeToCells" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DeleteLogCommand}">
+                                                <fa:ImageAwesome Icon="Trash" Foreground="Red" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>

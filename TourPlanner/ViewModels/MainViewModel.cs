@@ -14,6 +14,7 @@ using TourPlanner.Persistence.Entities;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Windows;
 using System.Collections;
+using TourPlanner.Views;
 
 
 namespace TourPlanner.ViewModels
@@ -21,23 +22,29 @@ namespace TourPlanner.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private ObservableCollection<TourViewModel> _tours;
+
         public ObservableCollection<TourViewModel> Tours
         {
             get => _tours;
-            set {
+            set
+            {
                 _tours = value;
                 OnPropertyChanged(nameof(Tours));
-        }}
+            }
+        }
 
         private ObservableCollection<TourLogModel> _tourLogs; //Entity...
+
         public ObservableCollection<TourLogModel> TourLogs
         {
             get => _tourLogs;
-            set {
+            set
+            {
                 _tourLogs = value;
                 OnPropertyChanged(nameof(TourLogs));
-        }}
-        
+            }
+        }
+
         public Array TransportTypes => Enum.GetValues(typeof(TourPlanner.Models.TransportType));
 
         private readonly TourRepository _tourRepository;
@@ -55,6 +62,29 @@ namespace TourPlanner.ViewModels
             TourDeleteCommand = new RelayCommand(DeleteTour);
 
             SaveCommand = new RelayCommand(SaveTour);
+
+            SaveLogCommand = new RelayCommand(SaveLog);
+            EditLogCommand = new RelayCommand(EditLog);
+            DeleteLogCommand = new RelayCommand(DeleteLog);
+        }
+
+        private void DeleteLog(object obj)
+        {
+            Console.WriteLine("Delete Log");
+            throw new NotImplementedException();
+        }
+
+        private void EditLog(object obj)
+        {
+            Console.WriteLine("Delete Log");
+            throw new NotImplementedException();
+        }
+
+        private void SaveLog(object obj)
+        {
+            LogWindow logWindow = new LogWindow();
+            logWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            logWindow.ShowDialog(); // This shows the Help window as a modal dialog
         }
 
         private void LoadTours()
@@ -77,14 +107,19 @@ namespace TourPlanner.ViewModels
             Array.Resize(ref strasseteile, strasseteile.Length - 1);
             string fromStreet = string.Join(" ", strasseteile);
             string[] cityteile = teile[1].Split(" ");
-            int fromZip; int.TryParse(cityteile[0], out fromZip);
+            int fromZip;
+            int.TryParse(cityteile[0], out fromZip);
             string fromCity = cityteile[1];
 
-            var fromAddressEntity = _tourRepository.GetAddressByAttributes(fromStreet, fromHousenumber, fromZip, fromCity);
-            if (fromAddressEntity == null) {
-                int fromAddressId = _tourRepository.AddAddress(new AddressEntity { Id = 0, Street = fromStreet, Housenumber = fromHousenumber, Zip = fromZip, City = fromCity }); ; 
+            var fromAddressEntity =
+                _tourRepository.GetAddressByAttributes(fromStreet, fromHousenumber, fromZip, fromCity);
+            if (fromAddressEntity == null)
+            {
+                int fromAddressId = _tourRepository.AddAddress(new AddressEntity
+                    { Id = 0, Street = fromStreet, Housenumber = fromHousenumber, Zip = fromZip, City = fromCity });
+                ;
                 fromAddressEntity = _tourRepository.GetAddressById(fromAddressId);
-            } 
+            }
 
             var toAddress = tour.ToAddress;
             teile = toAddress.Split(',');
@@ -95,16 +130,20 @@ namespace TourPlanner.ViewModels
             Array.Resize(ref strasseteile, strasseteile.Length - 1);
             string toStreet = string.Join(" ", strasseteile);
             cityteile = teile[1].Split(" ");
-            int toZip; int.TryParse(cityteile[0], out toZip);
+            int toZip;
+            int.TryParse(cityteile[0], out toZip);
             string toCity = cityteile[1];
 
             var toAddressEntity = _tourRepository.GetAddressByAttributes(toStreet, toHousenumber, toZip, toCity);
-            if (toAddressEntity == null) {
-                int toAddressId = _tourRepository.AddAddress(new AddressEntity { Street = toStreet, Housenumber = toHousenumber, Zip = toZip, City = toCity });
+            if (toAddressEntity == null)
+            {
+                int toAddressId = _tourRepository.AddAddress(new AddressEntity
+                    { Street = toStreet, Housenumber = toHousenumber, Zip = toZip, City = toCity });
                 toAddressEntity = _tourRepository.GetAddressById(toAddressId);
             }
 
-            var tourEntity = new TourEntity {
+            var tourEntity = new TourEntity
+            {
                 Id = tour.Id,
                 Name = tour.Name,
                 Description = tour.Description,
@@ -125,183 +164,270 @@ namespace TourPlanner.ViewModels
 
 
         private ICommand _expandedCommand;
+
         public ICommand ExpandedCommand
         {
             get { return _expandedCommand; }
-            set {
+            set
+            {
                 _expandedCommand = value;
                 OnPropertyChanged(nameof(ExpandedCommand));
-        }}
+            }
+        }
 
         private ICommand _tourCreateCommand;
+
         public ICommand TourCreateCommand
         {
             get { return _tourCreateCommand; }
-            set {
+            set
+            {
                 _tourCreateCommand = value;
                 OnPropertyChanged(nameof(TourCreateCommand));
-        }}
+            }
+        }
 
         private ICommand _tourEditCommand;
+
         public ICommand TourEditCommand
         {
             get { return _tourEditCommand; }
-            set {
+            set
+            {
                 _tourEditCommand = value;
                 OnPropertyChanged(nameof(TourEditCommand));
-        }}
+            }
+        }
 
         private ICommand _tourReportCommand;
+
         public ICommand TourReportCommand
         {
             get { return _tourReportCommand; }
-            set {
+            set
+            {
                 _tourReportCommand = value;
                 OnPropertyChanged(nameof(TourReportCommand));
-        }}
+            }
+        }
 
         private ICommand _exportCommand;
+
         public ICommand ExportCommand
         {
             get { return _exportCommand; }
-            set {
+            set
+            {
                 _exportCommand = value;
                 OnPropertyChanged(nameof(ExportCommand));
-        }}
+            }
+        }
 
         private ICommand _tourDeleteCommand;
+
         public ICommand TourDeleteCommand
         {
             get { return _tourDeleteCommand; }
-            set {
+            set
+            {
                 _tourDeleteCommand = value;
                 OnPropertyChanged(nameof(TourDeleteCommand));
-        }}
+            }
+        }
 
         private ICommand _saveCommand;
+
         public ICommand SaveCommand
         {
             get { return _saveCommand; }
-            set {
+            set
+            {
                 _saveCommand = value;
                 OnPropertyChanged(nameof(SaveCommand));
-        }}
+            }
+        }
+
+        private ICommand _editLogCommand;
+
+        public ICommand EditLogCommand
+        {
+            get { return _editLogCommand; }
+            set
+            {
+                _editLogCommand = value;
+                OnPropertyChanged(nameof(EditLogCommand));
+            }
+        }
+
+        private ICommand _deleteLogCommand;
+
+        public ICommand DeleteLogCommand
+        {
+            get { return _deleteLogCommand; }
+            set
+            {
+                _deleteLogCommand = value;
+                OnPropertyChanged(nameof(DeleteLogCommand));
+            }
+        }
+
+        private ICommand _saveLogCommand;
+
+        public ICommand SaveLogCommand
+        {
+            get { return _saveLogCommand; }
+            set
+            {
+                _saveLogCommand = value;
+                OnPropertyChanged(nameof(SaveLogCommand));
+            }
+        }
 
 
         private TourViewModel? _expandedTour = null;
+
         public TourViewModel ExpandedTour
         {
             get { return _expandedTour; }
-            set {
-                if (_expandedTour != value) {
-                    if (_expandedTour != null) {
-                        _expandedTour.PropertyChanged -= TourViewModel_PropertyChanged; // Unsubscribe from the previously expanded tour
+            set
+            {
+                if (_expandedTour != value)
+                {
+                    if (_expandedTour != null)
+                    {
+                        _expandedTour.PropertyChanged -=
+                            TourViewModel_PropertyChanged; // Unsubscribe from the previously expanded tour
                     }
+
                     _expandedTour = value;
                     OnPropertyChanged(nameof(ExpandedTour));
-                    if (_expandedTour != null) {
-                        _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
-                        LoadLogsForExpandedTour(_expandedTour.Tour);  // Load logs when a tour is expanded
-        }}}}
+                    if (_expandedTour != null)
+                    {
+                        _expandedTour.PropertyChanged +=
+                            TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
+                    }
+                }
+            }
+        }
 
         private void TourViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsExpanded") {
+            if (e.PropertyName == "IsExpanded")
+            {
                 var tourViewModel = sender as TourViewModel;
 
-                if (tourViewModel != null && !tourViewModel.IsExpanded) {
+                if (tourViewModel != null && !tourViewModel.IsExpanded)
+                {
                     // If the IsExpanded property of a TourViewModel becomes false, set ExpandedTour to null
                     ExpandedTour = null;
-        }}}
-    
-        private async void LoadLogsForExpandedTour(TourModel tourModel)
-        {
-            var logs = await _tourRepository.GetLogsByTourIdAsync(tourModel.Id);
-            _tourLogs = new ObservableCollection<TourLogModel>(logs.Select(log => new TourLogModel(log)));
-            _expandedTour.Tour.Logs = new ObservableCollection<TourLogModel>(logs.Select(log => new TourLogModel(log)));
+                }
+            }
         }
-        
+
         private void ExpandTour(object parameter)
         {
-            if (parameter is TreeViewItem treeViewItem) {
+            if (parameter is TreeViewItem treeViewItem)
+            {
                 var tourViewModel = treeViewItem.DataContext as TourViewModel;
-                
-                if (tourViewModel != null) {
+
+                if (tourViewModel != null)
+                {
                     ExpandedTour = tourViewModel;
 
-                    foreach (var item in Tours) {
-                        if (item != tourViewModel) {
-                            if (item != null) {
+                    foreach (var item in Tours)
+                    {
+                        if (item != tourViewModel)
+                        {
+                            if (item != null)
+                            {
                                 item.IsExpanded = false;
-        }}}}}}
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         private void CreateTour(object parameter)
-        { 
-            FormTour = new TourViewModel(new TourModel());    
+        {
+            FormTour = new TourViewModel(new TourModel());
         }
 
         private async void EditTour(object parameter)
         {
-            if(parameter is TreeViewItem treeViewItem) {
+            if (parameter is TreeViewItem treeViewItem)
+            {
                 var tourViewModel = treeViewItem.DataContext as TourViewModel;
-                
-                if (tourViewModel != null) {
+
+                if (tourViewModel != null)
+                {
                     // get Data for this tour of DB and make a new tourviewmodel/ a copy so data of listet tour is not changed before saved in DB
                     var getTourEntity = _tourRepository.GetTourByIdAsync(tourViewModel.Id);
                     var tourEntity = await getTourEntity;
 
-                    if (tourEntity != null) {
-                        FormTour = new TourViewModel ( new TourModel(tourEntity));
-        }}}}
+                    if (tourEntity != null)
+                    {
+                        FormTour = new TourViewModel(new TourModel(tourEntity));
+                    }
+                }
+            }
+        }
 
         private void ReportTour(object parameter)
         {
-
         }
 
         private void ExportTour(object parameter)
         {
-
         }
 
         private async void DeleteTour(object parameter)
         {
-            if (parameter is TreeViewItem treeViewItem) {
+            if (parameter is TreeViewItem treeViewItem)
+            {
                 var tourViewModel = treeViewItem.DataContext as TourViewModel;
-                
-                if (tourViewModel != null) {
+
+                if (tourViewModel != null)
+                {
                     await _tourRepository.DeleteTourByIdAsync(tourViewModel.Id);
-                     LoadTours();
-                     MessageBox.Show($"Tour successfully deleted");                   
-        }}}
+                    LoadTours();
+                    MessageBox.Show($"Tour successfully deleted");
+                }
+            }
+        }
 
         private async void SaveTour(object parameter)
         {
             // if error don't save
-            if (FormTour.HasErrors) {
+            if (FormTour.HasErrors)
+            {
                 MessageBox.Show($"Tour could not be saved, first handle the errors");
                 return;
             }
 
             // Update
-            if (FormTour.Tour.IsNew == null) {
+            if (FormTour.Tour.IsNew == null)
+            {
                 await _tourRepository.UpdateTourAsync(TourModelToEntity(FormTour.Tour));
                 FormTour = null;
                 LoadTours();
                 MessageBox.Show($"Changes to the tour have been successfully applied");
                 OnUpdateCompleted(EventArgs.Empty);
-            } 
+            }
             // Create
-            else {
+            else
+            {
                 await _tourRepository.CreateTourAsync(TourModelToEntity(FormTour.Tour));
                 FormTour = null;
                 LoadTours();
                 MessageBox.Show($"New tour successfully created");
                 OnUpdateCompleted(EventArgs.Empty);
-        }}
+            }
+        }
 
 
         public event EventHandler UpdateCompleted;
+
         protected virtual void OnUpdateCompleted(EventArgs e)
         {
             UpdateCompleted?.Invoke(this, e);
@@ -309,19 +435,25 @@ namespace TourPlanner.ViewModels
 
 
         private TourViewModel? _formTour = null;
+
         public TourViewModel FormTour
         {
             get { return _formTour; }
-            set {
-                if (_formTour != value) {
+            set
+            {
+                if (_formTour != value)
+                {
                     // if (_formTour != null) { _formTour.ErrorsChanged -= FormTour_ErrorsChanged; }
                     _formTour = value;
                     // if (_formTour != null) { _formTour.ErrorsChanged += FormTour_ErrorsChanged; }
-                    OnPropertyChanged(nameof(FormTour));                    
-        }}}
+                    OnPropertyChanged(nameof(FormTour));
+                }
+            }
+        }
 
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -329,7 +461,7 @@ namespace TourPlanner.ViewModels
 
         /*private void FormTour_ErrorsChanged(object sender, DataErrorsChangedEventArgs e)
         {
-           
+
         }*/
     }
 }
