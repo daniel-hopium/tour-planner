@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TourPlanner", "TourPlanner\TourPlanner.csproj", "{2A80EEC7-1CE3-4B0F-A578-CB17FE945F6D}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TourPlanner", "TourPlanner\TourPlanner.csproj", "{2A80EEC7-1CE3-4B0F-A578-CB17FE945F6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRourPlanner", "TestRourPlanner\TestRourPlanner.csproj", "{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,15 @@ Global
 		{2A80EEC7-1CE3-4B0F-A578-CB17FE945F6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A80EEC7-1CE3-4B0F-A578-CB17FE945F6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A80EEC7-1CE3-4B0F-A578-CB17FE945F6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D453CB05-1C84-42E2-AF61-3F3ACB3F8502}
 	EndGlobalSection
 EndGlobal

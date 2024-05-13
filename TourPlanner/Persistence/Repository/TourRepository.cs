@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TourPlanner.Persistence.Repository;
 
-public class TourRepository
+public class TourRepository : ITourRepository
 {
     private readonly TourPlannerDbContext _dbContext;
 

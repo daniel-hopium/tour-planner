@@ -31,9 +31,9 @@ namespace TourPlanner.ViewModels
 
         public Array TransportTypes => Enum.GetValues(typeof(TourPlanner.Models.TransportType));
 
-        private readonly TourRepository _tourRepository;
+        private readonly ITourRepository _tourRepository;
 
-        public MainViewModel(TourRepository tourRepository)
+        public MainViewModel(ITourRepository tourRepository)
         {
             _tourRepository = tourRepository;
             LoadTours();
@@ -51,10 +51,12 @@ namespace TourPlanner.ViewModels
         private void LoadTours()
         {
             var tourEntities = _tourRepository.GetTours();
-            var tourModels = tourEntities.Select(entity => new TourModel(entity));
-            Tours = new ObservableCollection<TourViewModel>(
-                tourModels.Select(model => new TourViewModel(model)));
-        }
+            if (tourEntities != null)
+            {
+                var tourModels = tourEntities.Select(entity => new TourModel(entity));
+                Tours = new ObservableCollection<TourViewModel>(
+                    tourModels.Select(model => new TourViewModel(model)));
+        }}
 
 
         public TourEntity TourModelToEntity(TourModel tour)
@@ -73,7 +75,7 @@ namespace TourPlanner.ViewModels
 
             var fromAddressEntity = _tourRepository.GetAddressByAttributes(fromStreet, fromHousenumber, fromZip, fromCity);
             if (fromAddressEntity == null) {
-                int fromAddressId = _tourRepository.AddAddress(new AddressEntity { Id = 0, Street = fromStreet, Housenumber = fromHousenumber, Zip = fromZip, City = fromCity }); ; 
+                int fromAddressId = _tourRepository.AddAddress(new AddressEntity { Id = 0, Street = fromStreet, Housenumber = fromHousenumber, Zip = fromZip, City = fromCity });
                 fromAddressEntity = _tourRepository.GetAddressById(fromAddressId);
             } 
 
@@ -249,14 +251,19 @@ namespace TourPlanner.ViewModels
 
         private async void DeleteTour(object parameter)
         {
+            TourViewModel tourViewModel = null;
+
             if (parameter is TreeViewItem treeViewItem) {
-                var tourViewModel = treeViewItem.DataContext as TourViewModel;
-                
-                if (tourViewModel != null) {
+                tourViewModel = (TourViewModel)(treeViewItem.DataContext);
+            } 
+            else if (parameter is TourViewModel) {
+                tourViewModel = (TourViewModel)parameter;
+            }
+            if (tourViewModel != null) {
                     await _tourRepository.DeleteTourByIdAsync(tourViewModel.Id);
                      LoadTours();
                      MessageBox.Show($"Tour successfully deleted");                   
-        }}}
+        }}
 
         private async void SaveTour(object parameter)
         {
