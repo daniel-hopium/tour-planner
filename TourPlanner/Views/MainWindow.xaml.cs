@@ -106,12 +106,16 @@ namespace TourPlanner.Views
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             HelpWindow helpWindow = new HelpWindow();
+            helpWindow.Owner = this;
+            helpWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             helpWindow.ShowDialog(); // This shows the Help window as a modal dialog
         }
 
-        private void LogButton_Click(object sender, RoutedEventArgs e)
+        private void AddLogButton_Click(object sender, RoutedEventArgs e)
         {
             LogWindow logWindow = new LogWindow();
+            logWindow.Owner = this;
+            logWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             logWindow.ShowDialog(); // This shows the Help window as a modal dialog
         }
     }

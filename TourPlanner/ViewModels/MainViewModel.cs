@@ -23,12 +23,21 @@ namespace TourPlanner.ViewModels
         private ObservableCollection<TourViewModel> _tours;
         public ObservableCollection<TourViewModel> Tours
         {
-            get { return _tours; }
+            get => _tours;
             set {
                 _tours = value;
                 OnPropertyChanged(nameof(Tours));
         }}
 
+        private ObservableCollection<TourLogEntity> _tourLogs; //Entity...
+        private ObservableCollection<TourLogEntity> TourLogs
+        {
+            get => _tourLogs;
+            set {
+                _tourLogs = value;
+                OnPropertyChanged(nameof(TourLogs));
+        }}
+        
         public Array TransportTypes => Enum.GetValues(typeof(TourPlanner.Models.TransportType));
 
         private readonly TourRepository _tourRepository;
@@ -192,6 +201,7 @@ namespace TourPlanner.ViewModels
                     OnPropertyChanged(nameof(ExpandedTour));
                     if (_expandedTour != null) {
                         _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
+                        LoadLogsForExpandedTour(_expandedTour);  // Load logs when a tour is expanded
         }}}}
 
         private void TourViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -204,6 +214,12 @@ namespace TourPlanner.ViewModels
                     ExpandedTour = null;
         }}}
     
+        private async void LoadLogsForExpandedTour(TourViewModel tourViewModel)
+        {
+            var logs = await _tourRepository.GetLogsByTourIdAsync(tourViewModel.Tour.Id);
+            tourViewModel.Tour.Logs = new ObservableCollection<TourLogEntity>(logs.Select(log => new TourLogEntity()));
+        }
+        
         private void ExpandTour(object parameter)
         {
             if (parameter is TreeViewItem treeViewItem) {

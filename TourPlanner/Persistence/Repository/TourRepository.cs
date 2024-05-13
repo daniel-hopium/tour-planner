@@ -4,6 +4,7 @@ using TourPlanner.Persistence.Utils;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using TourPlanner.Models;
 
 namespace TourPlanner.Persistence.Repository;
 
@@ -66,4 +67,40 @@ public class TourRepository
         _dbContext.SaveChanges();
         return address.Id;
     }
+
+    public async Task<List<TourLogEntity>> GetLogsByTourIdAsync(int tourId)
+    {
+        // Use the Where method to filter logs based on the tourId and ToListAsync to execute the query asynchronously
+        var logs = await _dbContext.TourLogs
+            .Where(log => log.TourId == tourId)
+            .ToListAsync();
+
+        return logs;
+    }
+    public async Task AddTourLogAsync(TourLogEntity tourLog)
+    {
+        _dbContext.TourLogs.Add(tourLog);
+        await _dbContext.SaveChangesAsync();
+    }
+    public async Task DeleteTourLogByIdAsync(int tourLogId)
+    {
+        var tourLog = await _dbContext.TourLogs.FindAsync(tourLogId);
+        if (tourLog != null)
+        {
+            _dbContext.TourLogs.Remove(tourLog);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
+    public async Task UpdateTourLogAsync(TourLogEntity updatedTourLog)
+    {
+        var tourLog = await _dbContext.TourLogs.FindAsync(updatedTourLog.Id);
+        if (tourLog != null)
+        {
+            // Assuming your context is tracking changes, you only need to copy the updated values
+            _dbContext.Entry(tourLog).CurrentValues.SetValues(updatedTourLog);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
+
+
 }

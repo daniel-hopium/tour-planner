@@ -40,7 +40,13 @@ INSERT INTO addresses (street, housenumber, zip, city, created)
 VALUES ('Strasse', '1a', 1200, 'Vienna', NOW()),
        ('Hauptstrasse', '4', 1190, 'Vienna', NOW());
 
--- Fügen Sie Daten in die Tour-Tabelle ein
+-- Fï¿½gen Sie Daten in die Tour-Tabelle ein
 INSERT INTO tours (name, description, from_address_fk, to_address_fk, transport_type, distance, est_time, image, popularity, child_friendliness, created)
 VALUES ('Tour 1', 'Description for Tour 1', 1, 1, 'hike', 1.2, 90, '/Persistence/Images/image1.png', 3, 5, NOW()),
        ('Tour 2', 'Description for Tour 2', 1, 2, 'hike', 9.2, 270, '/Persistence/Images/image2.png', 1, 3, NOW());
+
+-- Insert data into the tourlogs table
+INSERT INTO tourlogs (tour_date, comment, tour_id_fk, difficulty, distance, total_time, rating, created)
+VALUES ('2023-05-01', 'Nice weather, challenging paths', 1, 3, 1.2, 60, 5, NOW()),
+       ('2023-05-02', 'Perfect day for a long hike', 1, 4, 1.5, 90, 4, NOW()),
+       ('2023-05-03', 'Rainy and difficult', 2, 5, 9.2, 270, 3, NOW());

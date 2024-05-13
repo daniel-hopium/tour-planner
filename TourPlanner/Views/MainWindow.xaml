@@ -89,7 +89,6 @@
 
             <!-- Button Leiste -->
             <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Margin="10">
-                <Button Content="Add Log" Click="LogButton_Click" Margin="5"/>
                 <Button Content="Summarize" Margin="5"/>
                 <Button Content="Add Tour" Click="AddTour_Click" Margin="5"/>
                 <Button Content="Help" Click="HelpButton_Click" Margin="5"/>
@@ -137,10 +136,23 @@
                     <Image Source="{Binding ExpandedTour.Image}" />
                 </TabItem>
                 <TabItem Header="Tour Logs">
-                    <!-- Datentabelle -->
-                    <DataGrid Margin="10">
-                        <!-- Hier könnten Spalten spezifiziert werden -->
-                    </DataGrid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Button Content="Add Log" Click="AddLogButton_Click" HorizontalAlignment="Center" Margin="10"/>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.Logs}" AutoGenerateColumns="False" CanUserAddRows="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date}"/>
+                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}"/>
+                                <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}"/>
+                                <DataGridTextColumn Header="Total Distance" Binding="{Binding TotalDistance}"/>
+                                <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime}"/>
+                                <DataGridTextColumn Header="Rating" Binding="{Binding Rating}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
                 </TabItem>
                 <TabItem x:Name="Tour" IsEnabled="False">
                     <!--IsEnabled="False"-->
