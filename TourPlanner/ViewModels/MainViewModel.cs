@@ -32,19 +32,7 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(Tours));
             }
         }
-
-        private ObservableCollection<TourLogModel> _tourLogs; //Entity...
-
-        public ObservableCollection<TourLogModel> TourLogs
-        {
-            get => _tourLogs;
-            set
-            {
-                _tourLogs = value;
-                OnPropertyChanged(nameof(TourLogs));
-            }
-        }
-
+      
         public Array TransportTypes => Enum.GetValues(typeof(TourPlanner.Models.TransportType));
 
         private readonly TourRepository _tourRepository;
@@ -295,16 +283,16 @@ namespace TourPlanner.ViewModels
                 {
                     if (_expandedTour != null)
                     {
-                        _expandedTour.PropertyChanged -=
-                            TourViewModel_PropertyChanged; // Unsubscribe from the previously expanded tour
+                        _expandedTour.PropertyChanged -= TourViewModel_PropertyChanged; // Unsubscribe from the previously expanded tour
+                        _expandedTour.ClearLogs();
                     }
 
                     _expandedTour = value;
                     OnPropertyChanged(nameof(ExpandedTour));
                     if (_expandedTour != null)
                     {
-                        _expandedTour.PropertyChanged +=
-                            TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
+                        _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
+                        _expandedTour.LoadLogs();
                     }
                 }
             }

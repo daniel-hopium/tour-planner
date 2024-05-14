@@ -133,7 +133,7 @@
                     </Style>
                 </TabControl.Resources>
                 <TabItem Header="Route">
-                    <Image Source="{Binding ExpandedTour.Tour.Image}" />
+                    <Image Source="{Binding ExpandedTour.Image}" />
                 </TabItem>
                 <TabItem Header="Tour Logs">
                     <Grid>
@@ -142,7 +142,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Button Content="Add Log" Command="{Binding SaveLogCommand}" HorizontalAlignment="Center" Margin="10"/>
-                        <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.Tour.Logs}" AutoGenerateColumns="False" CanUserAddRows="True">
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.TourLogs}" AutoGenerateColumns="False" CanUserAddRows="True">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Edit" Width="SizeToCells" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -153,13 +153,13 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                
-                                <DataGridTextColumn Header="TourDate" Binding="{Binding TourDate}"/>
-                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}"/>
-                                <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}"/>
-                                <DataGridTextColumn Header="Distance" Binding="{Binding Distance}"/>
-                                <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime}"/>
-                                <DataGridTextColumn Header="Rating" Binding="{Binding Rating}"/>
+
+                                <DataGridTextColumn Header="TourDate" Binding="{Binding TourDate, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
+                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
+                                <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
+                                <DataGridTextColumn Header="Distance" Binding="{Binding Distance, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
+                                <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
+                                <DataGridTextColumn Header="Rating" Binding="{Binding Rating, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
                                 
                                 <DataGridTemplateColumn Header="Delete" Width="SizeToCells" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>

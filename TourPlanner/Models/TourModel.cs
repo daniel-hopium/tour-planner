@@ -28,7 +28,6 @@ public class TourModel
     public int Popularity {  get; set; }
     public int ChildFriendliness { get; set; }
     public bool? IsNew;
-    public ObservableCollection<TourLogModel> Logs { get; set; }
 
     //public TourModel(int id, string name, string description, string fromAddress, string toAddress, string transportType, double distance, int estimatedTime, string image, int popularity, int childFriendliness)
     public TourModel(TourEntity tourEntity)
@@ -43,12 +42,7 @@ public class TourModel
         EstimatedTime = tourEntity.EstimatedTime;
         Image = tourEntity.Image;
         Popularity = tourEntity.Popularity;
-        ChildFriendliness = tourEntity.ChildFriendliness;
-        Logs = new ObservableCollection<TourLogModel>(
-            tourEntity.Logs?.Select(log => TourLogMapper.MapToModel(log)).ToList() ?? new List<TourLogModel>()
-        );
-
-        
+        ChildFriendliness = tourEntity.ChildFriendliness; 
     }
 
     
