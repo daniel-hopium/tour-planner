@@ -17,5 +17,10 @@ namespace TourPlanner.Persistence.Repository
         public AddressEntity GetAddressById(int tourId);
         public AddressEntity GetAddressByAttributes(string street, string housnumber, int zip, string city);
         public int AddAddress(AddressEntity address);
+        public Task<List<TourLogEntity>> GetLogsByTourIdAsync(int tourId);
+        public Task CreateTourLogAsync(TourLogEntity tourLog);
+        public Task DeleteTourLogByIdAsync(int tourLogId);
+        public Task UpdateTourLogAsync(TourLogEntity updatedTourLog);
+
     }
 }

@@ -315,5 +315,14 @@ namespace TourPlanner.ViewModels
                 }
             }
         }
+        
+        public bool AreFieldsEmpty()
+        {
+            return string.IsNullOrWhiteSpace(TourDate) ||
+                   string.IsNullOrWhiteSpace(Difficulty) ||
+                   string.IsNullOrWhiteSpace(Distance) ||
+                   string.IsNullOrWhiteSpace(Comment) ||
+                   string.IsNullOrWhiteSpace(TotalTime);
+        }
     }
 }

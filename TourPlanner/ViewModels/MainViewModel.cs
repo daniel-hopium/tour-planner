@@ -120,6 +120,7 @@ namespace TourPlanner.ViewModels
                 {
                     // Now you can use submittedData to save or process further
                     SaveTourLog(submittedData);
+                    MessageBox.Show($"Tour Log successfully added", "Success", MessageBoxButton.OK); 
                 }
             }
         }

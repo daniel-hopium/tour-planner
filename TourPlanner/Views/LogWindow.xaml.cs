@@ -15,14 +15,19 @@ public partial class LogWindow : Window
     {
         
         TourLogViewModel viewModel = this.DataContext as TourLogViewModel;
-        if (viewModel != null && viewModel.HasErrors == false && viewModel.Comment != null) // Fix empty fields when opening the window
+        if (viewModel!.HasErrors)
         {
-            this.DialogResult = true; // This will close the window only if valid
-            this.Close();
+            MessageBox.Show("Please correct the errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        else if(viewModel!.AreFieldsEmpty())
+        {
+            MessageBox.Show("Some fields are empty", "Empty Fields", MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
         else
         {
-            MessageBox.Show("Please correct the errors before saving.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            this.DialogResult = true; // This will close the window only if valid
+            this.Close();
         }
         
     }
