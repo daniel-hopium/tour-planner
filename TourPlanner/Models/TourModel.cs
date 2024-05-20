@@ -43,12 +43,7 @@ public class TourModel
         EstimatedTime = tourEntity.EstimatedTime;
         Image = tourEntity.Image;
         Popularity = tourEntity.Popularity;
-        ChildFriendliness = tourEntity.ChildFriendliness;
-        Logs = new ObservableCollection<TourLogModel>(
-            tourEntity.Logs?.Select(log => TourLogMapper.MapToModel(log)).ToList() ?? new List<TourLogModel>()
-        );
-
-        
+        ChildFriendliness = tourEntity.ChildFriendliness; 
     }
 
     

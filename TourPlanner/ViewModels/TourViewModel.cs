@@ -24,6 +24,19 @@ namespace TourPlanner.ViewModels
             get { return _tour; }
         }
 
+        private ObservableCollection<TourLogViewModel> _tourLogs;
+
+        public ObservableCollection<TourLogViewModel> TourLogs
+        {
+            get => _tourLogs;
+            set
+            {
+                _tourLogs = value;
+                OnPropertyChanged(nameof(TourLogs));
+            }
+        }
+
+
         private bool _isExpanded;
 
         private readonly TourRepository _tourRepository = new TourRepository(new TourPlannerDbContext());
@@ -31,7 +44,6 @@ namespace TourPlanner.ViewModels
         public TourViewModel(TourModel tour)
         {
             _tour = tour;
-            LoadLogsForExpandedTour(tour);
         }
 
         public bool IsExpanded
@@ -162,10 +174,18 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        private async void LoadLogsForExpandedTour(TourModel tourModel)
+        public async void LoadLogs()
         {
-            var logs = await _tourRepository.GetLogsByTourIdAsync(tourModel.Id);
-            _tour.Logs = new ObservableCollection<TourLogModel>(logs.Select(log => new TourLogModel(log)));
+            var logs = await _tourRepository.GetLogsByTourIdAsync(Id);
+            TourLogs = new ObservableCollection<TourLogViewModel>(logs.Select(log => new TourLogViewModel(new TourLogModel(log))));
+            
+            
+        }
+
+        public void ClearLogs()
+        {
+            TourLogs.Clear();
+            _tourLogs.Clear();
         }
 
 

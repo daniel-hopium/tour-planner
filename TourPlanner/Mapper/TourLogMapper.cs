@@ -12,7 +12,7 @@ public static class TourLogMapper
         var model = new TourLogModel
         {
             Id = entity.Id,
-            TourDate = DateTime.Parse(entity.TourDate), // Convert string to DateTime, ensure format matches
+            TourDate = entity.TourDate,
             Comment = entity.Comment,
             TourId = entity.TourId,
             Difficulty = entity.Difficulty,

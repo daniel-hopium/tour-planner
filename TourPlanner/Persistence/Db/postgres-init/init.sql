@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS tours (
 
 CREATE TABLE IF NOT EXISTS tourlogs (
     id                  SERIAL          PRIMARY KEY,
-    tour_date           VARCHAR(255)    NOT NULL,
+    tour_date           DATE            NOT NULL,
     comment             VARCHAR(255),
     tour_id_fk          INT             NOT NULL    references tours(id),
     difficulty          INT             NOT NULL,

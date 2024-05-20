@@ -8,7 +8,7 @@ using TourPlanner.Models;
 
 namespace TourPlanner.Persistence.Repository;
 
-public class TourRepository
+public class TourRepository : ITourRepository
 {
     private readonly TourPlannerDbContext _dbContext;
 
@@ -72,12 +72,13 @@ public class TourRepository
     {
         // Use the Where method to filter logs based on the tourId and ToListAsync to execute the query asynchronously
         var logs = await _dbContext.TourLogs
+            .AsNoTracking()
             .Where(log => log.TourId == tourId)
             .ToListAsync();
 
         return logs;
     }
-    public async Task AddTourLogAsync(TourLogEntity tourLog)
+    public async Task CreateTourLogAsync(TourLogEntity tourLog)
     {
         _dbContext.TourLogs.Add(tourLog);
         await _dbContext.SaveChangesAsync();

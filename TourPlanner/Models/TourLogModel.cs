@@ -5,7 +5,7 @@ namespace TourPlanner.Models;
 public class TourLogModel
 {
     public int Id { get; set; }
-    public DateTime TourDate { get; set; }
+    public DateOnly TourDate { get; set; }
     public string Comment { get; set; }
     public int TourId { get; set; }
     public int Difficulty { get; set; }
@@ -20,7 +20,7 @@ public class TourLogModel
         if (entity != null)
         {
             Id = entity.Id;
-            TourDate = DateTime.Parse(entity.TourDate); // Assuming the date is stored in a correct format
+            TourDate = entity.TourDate; // Assuming the date is stored in a correct format
             Comment = entity.Comment;
             TourId = entity.TourId;
             Difficulty = entity.Difficulty;
@@ -34,5 +34,14 @@ public class TourLogModel
     // Parameterless constructor for initializations without data
     public TourLogModel()
     {
+        Id = 0;
+        TourDate = DateOnly.FromDateTime(DateTime.Now); // Initialize with today's date
+        Comment = string.Empty;
+        TourId = 0;
+        Difficulty = 0;
+        Distance = 0;
+        TotalTime = 0;
+        Rating = 0;
+        Created = DateTime.Now;
     }
 }
