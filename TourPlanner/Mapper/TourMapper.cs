@@ -10,9 +10,9 @@ public class TourMapper
 {
     private readonly ITourRepository _tourRepository;
 
-    public TourMapper(ITourRepository tourRepository)
+    public TourMapper()
     {
-        _tourRepository = tourRepository;
+        _tourRepository = TourRepository.Instance;
     }
 
     public TourEntity TourModelToEntity(TourModel tour)
@@ -26,7 +26,8 @@ public class TourMapper
         Array.Resize(ref strasseteile, strasseteile.Length - 1);
         string fromStreet = string.Join(" ", strasseteile);
         string[] cityteile = teile[1].Split(" ");
-        int fromZip; int.TryParse(cityteile[0], out fromZip);
+        int fromZip; 
+        int.TryParse(cityteile[0], out fromZip);
         string fromCity = cityteile[1];
 
         var fromAddressEntity = _tourRepository.GetAddressByAttributes(fromStreet, fromHousenumber, fromZip, fromCity);
@@ -45,7 +46,8 @@ public class TourMapper
         Array.Resize(ref strasseteile, strasseteile.Length - 1);
         string toStreet = string.Join(" ", strasseteile);
         cityteile = teile[1].Split(" ");
-        int toZip; int.TryParse(cityteile[0], out toZip);
+        int toZip;
+        int.TryParse(cityteile[0], out toZip);
         string toCity = cityteile[1];
 
         var toAddressEntity = _tourRepository.GetAddressByAttributes(toStreet, toHousenumber, toZip, toCity);

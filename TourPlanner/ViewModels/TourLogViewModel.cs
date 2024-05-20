@@ -26,13 +26,14 @@ namespace TourPlanner.ViewModels
             get { return _tourLog; }
         }
 
-        private readonly TourRepository _tourRepository = new TourRepository(new TourPlannerDbContext());
+        private readonly TourRepository _tourRepository;
 
         private Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
 
         public TourLogViewModel(TourLogModel tourLog)
         {
             _tourLog = tourLog;
+            _tourRepository = TourRepository.Instance;
         }
 
         

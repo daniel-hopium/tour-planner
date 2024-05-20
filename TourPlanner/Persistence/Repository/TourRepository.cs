@@ -10,6 +10,20 @@ namespace TourPlanner.Persistence.Repository;
 
 public class TourRepository : ITourRepository
 {
+    // Singleton Pattern without Dependency Injection -> all ViewModels able use same repository
+    private static TourRepository _instance;
+    public static TourRepository Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new TourRepository(new TourPlannerDbContext());
+            }
+            return _instance;
+        }
+    }
+
     private readonly TourPlannerDbContext _dbContext;
 
     public TourRepository(TourPlannerDbContext dbContext)

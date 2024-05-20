@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="TourPlanner.Views.TourFormControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TourPlanner.Views"
+             xmlns:viewUtils="clr-namespace:TourPlanner.Views.Utils"
+             xmlns:viewModel="clr-namespace:TourPlanner.ViewModels"
+             xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <viewModel:TourViewModel />
+    </UserControl.DataContext>
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ValidatedTextboxTemplate.xaml"/>
+                <ResourceDictionary Source="RoundedIconButtonStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    
+    <!-- Eingabebereich für Tour -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Orientation="Vertical" Margin="30">
+            <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="0,0,45,0">
+                    <Label Content="Name"/>
+                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Template="{StaticResource ValidatedTextBoxTemplate}" TextChanged="TextBox_TextChanged" Height="22" MinWidth="140" Width="440" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Transport Type"/>
+                    <ComboBox x:Name="FormTypeTour" SelectedItem="{Binding TransportType, Mode=TwoWay}" ItemsSource="{Binding TransportTypes}" MinWidth="140" Width="440" Height="22" />
+                </StackPanel>
+            </WrapPanel>
+            <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="0,0,45,0">
+                    <Label Content="From"/>
+                    <TextBox Text="{Binding FromAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Template="{StaticResource ValidatedTextBoxTemplate}" TextChanged="TextBox_TextChanged"  Height="22" MinWidth="140" Width="440"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="To"/>
+                    <TextBox Text="{Binding ToAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Template="{StaticResource ValidatedTextBoxTemplate}" TextChanged="TextBox_TextChanged" Height="22" MinWidth="140" Width="440"/>
+                </StackPanel>
+            </WrapPanel>
+
+            <StackPanel Orientation="Vertical" Margin="0,10,0,0" MaxWidth="925">
+                <Label Content="Description"/>
+                <TextBox Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Template="{StaticResource ValidatedTextBoxTemplate}" TextChanged="TextBox_TextChanged" MinHeight="100" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <viewUtils:IconButton  MaxWidth="925" Content="Save Tour" Style="{StaticResource RoundedIconButton}" Command="{Binding SaveCommand}" Background="CornflowerBlue" Margin="20" Icon="FloppyOutline"/>
+
+            <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="0,0,45,0">
+                    <Label Content="Total Distance (km)"/>
+                    <TextBox Text="{Binding Distance, Mode=TwoWay}" MinWidth="140" Width="440" HorizontalAlignment="Stretch"  Height="22" IsEnabled="False" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Estimated Time (minutes)"/>
+                    <TextBox Text="{Binding EstimatedTime, Mode=TwoWay}" MinWidth="140" Width="440"  HorizontalAlignment="Stretch" Height="22" IsEnabled="False" />
+                </StackPanel>
+            </WrapPanel>
+
+            <Image Source="{Binding Image}" MaxWidth="925" Margin="0 20" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

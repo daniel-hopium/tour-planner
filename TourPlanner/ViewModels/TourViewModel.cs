@@ -8,10 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows;
 using TourPlanner.Models;
 using TourPlanner.Persistence.Entities;
 using TourPlanner.Persistence.Repository;
 using TourPlanner.Persistence.Utils;
+using TourPlanner.ViewModels.Utils;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using TourPlanner.Mapper;
 
 namespace TourPlanner.ViewModels
 {
@@ -22,6 +28,14 @@ namespace TourPlanner.ViewModels
         public TourModel Tour
         {
             get { return _tour; }
+            private set
+            {
+                if (_tour != value)
+                {
+                    _tour = value;
+                    OnPropertyChanged(nameof(Tour));
+                }
+            }
         }
 
         private ObservableCollection<TourLogViewModel> _tourLogs;
@@ -36,15 +50,49 @@ namespace TourPlanner.ViewModels
             }
         }
 
+        public Array TransportTypes => Enum.GetValues(typeof(TourPlanner.Models.TransportType));
 
-        private bool _isExpanded;
+        private TourMapper _tourMapper;
 
-        private readonly TourRepository _tourRepository = new TourRepository(new TourPlannerDbContext());
+        private readonly TourRepository _tourRepository;
+
+        // Singleton Pattern without Dependency Injection -> all ViewModels able use same TourListControlViewModel
+        private static readonly TourViewModel _instance = new TourViewModel();
+        public static TourViewModel Instance
+        {
+            get
+            {
+                return _instance;
+            }
+        }
+        static TourViewModel()
+        {
+
+        }
+
+        public TourViewModel() // (TourModel tour)
+        {
+            _tour = new TourModel();
+            _tourRepository = TourRepository.Instance;
+            _tourMapper = new TourMapper();
+
+            TourSetCommand = new RelayCommand(SetTour);
+            SaveCommand = new RelayCommand(SaveTour);
+            SetEditModeCommand = new RelayCommand(SetEditMode);
+        }
 
         public TourViewModel(TourModel tour)
         {
             _tour = tour;
+            _tourRepository = TourRepository.Instance;
+            _tourMapper = new TourMapper();
+
+            SaveCommand = new RelayCommand(SaveTour);
+            SetEditModeCommand = new RelayCommand(SetEditMode);
         }
+
+
+        private bool _isExpanded;
 
         public bool IsExpanded
         {
@@ -55,6 +103,21 @@ namespace TourPlanner.ViewModels
                 {
                     _isExpanded = value;
                     OnPropertyChanged(nameof(IsExpanded));
+                }
+            }
+        }
+
+        private bool _isEditMode;
+
+        public bool IsEditMode
+        {
+            get { return _isEditMode; }
+            set
+            {
+                if (_isEditMode != value)
+                {
+                    _isEditMode = value;
+                    OnPropertyChanged(nameof(IsEditMode));
                 }
             }
         }
@@ -96,7 +159,7 @@ namespace TourPlanner.ViewModels
         {
             get { return _tour.FromAddress; }
             set
-            {
+            {  
                 _tour.FromAddress = value;
                 ValidateProperty(nameof(FromAddress));
                 OnPropertyChanged(nameof(FromAddress));
@@ -108,7 +171,7 @@ namespace TourPlanner.ViewModels
             get { return _tour.ToAddress; }
             set
             {
-                _tour.ToAddress = value;
+                _tour.ToAddress = value;               
                 ValidateProperty(nameof(ToAddress));
                 OnPropertyChanged(nameof(ToAddress));
             }
@@ -189,6 +252,104 @@ namespace TourPlanner.ViewModels
         }
 
 
+         public IEnumerable GetErrors(string propertyName)
+         {
+             string pattern = @"^[A-Za-zßüöä ]+ +\d+[A-Za-z]? *, *\d{4,} +[A-Za-zßüöä ]+$";
+
+             if (propertyName == "Name" && string.IsNullOrEmpty(Name))
+             {                
+                 yield return "Name can not be empty";
+             }
+             else if (propertyName == "Description" && string.IsNullOrEmpty(Description))
+             {
+                 yield return "Description can not be empty";
+             }
+             else if (propertyName == "FromAddress" && string.IsNullOrEmpty(FromAddress))
+             {
+                 yield return "From-Address can not be empty";
+             }
+             else if (propertyName == "ToAddress" && string.IsNullOrEmpty(ToAddress))
+             {
+                 yield return "To-Address can not be empty";
+             }
+             else if (propertyName == "FromAddress" && !Regex.IsMatch(FromAddress, pattern))
+             {
+                 yield return "From-Address need to follow the pattern 'Street 12, 1234 City'";
+             }
+             else if (propertyName == "ToAddress" && !Regex.IsMatch(ToAddress, pattern))
+             {
+                 yield return "To-Address need to follow the pattern 'Street 12, 1234 City'";
+             }
+
+             yield break;
+         }
+
+         public bool HasErrors => GetErrors("Name").OfType<string>().Any() ||
+                                  GetErrors("Description").OfType<string>().Any() ||
+                                  GetErrors("FromAddress").OfType<string>().Any() ||
+                                  GetErrors("ToAddress").OfType<string>().Any(); 
+
+         private void ValidateProperty(string propertyName)
+         {
+            OnErrorsChanged(propertyName);
+        }
+
+
+        private void SetTour(object parameter)
+        {
+            if(parameter is TourViewModel tourViewModel)
+            {
+                Tour = tourViewModel.Tour;
+                OnPropertyChanged(nameof(Name));
+                OnPropertyChanged(nameof(Description));
+                OnPropertyChanged(nameof(FromAddress));
+                OnPropertyChanged(nameof(ToAddress));
+            }          
+        }      
+
+        private async void SaveTour(object parameter)
+        {
+            // if error don't save
+            if (HasErrors)
+            {
+                MessageBox.Show($"Tour could not be saved, first handle the errors");
+                return;
+            }
+
+            // Update
+            if (_tour.IsNew == null)
+            {
+                await _tourRepository.UpdateTourAsync(_tourMapper.TourModelToEntity(_tour));
+                _tour = new TourModel();
+                MessageBox.Show($"Changes to the tour have been successfully applied");
+                OnUpdateCompleted(EventArgs.Empty);
+            }
+            // Create
+            else
+            {
+                await _tourRepository.CreateTourAsync(_tourMapper.TourModelToEntity(_tour));
+                _tour = new TourModel();
+                MessageBox.Show($"New tour successfully created");
+                OnUpdateCompleted(EventArgs.Empty);
+            }
+        }
+
+        private void SetEditMode(object parameter)
+        {
+            if (parameter is bool editing)
+            {
+                IsEditMode = editing;
+            }
+           
+        }
+
+        public event EventHandler UpdateCompleted;
+
+        protected virtual void OnUpdateCompleted(EventArgs e)
+        {
+            UpdateCompleted?.Invoke(this, e);
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
@@ -204,47 +365,40 @@ namespace TourPlanner.ViewModels
         }
 
 
-        public IEnumerable GetErrors(string propertyName)
+        private ICommand _saveCommand;
+
+        public ICommand SaveCommand
         {
-            string pattern = @"^[A-Za-zßüöä ]+ +\d+[A-Za-z]? *, *\d{4,} +[A-Za-zßüöä ]+$";
-
-            if (propertyName == "Name" && string.IsNullOrEmpty(Name))
+            get { return _saveCommand; }
+            set
             {
-                yield return "Name can not be empty";
+                _saveCommand = value;
+                OnPropertyChanged(nameof(SaveCommand));
             }
-            else if (propertyName == "Description" && string.IsNullOrEmpty(Description))
-            {
-                yield return "Description can not be empty";
-            }
-            else if (propertyName == "FromAddress" && string.IsNullOrEmpty(FromAddress))
-            {
-                yield return "From-Address can not be empty";
-            }
-            else if (propertyName == "ToAddress" && string.IsNullOrEmpty(ToAddress))
-            {
-                yield return "To-Address can not be empty";
-            }
-            else if (propertyName == "FromAddress" && !Regex.IsMatch(FromAddress, pattern))
-            {
-                yield return "From-Address need to follow the pattern 'Street 12, 1234 City'";
-            }
-            else if (propertyName == "ToAddress" && !Regex.IsMatch(ToAddress, pattern))
-            {
-                yield return "To-Address need to follow the pattern 'Street 12, 1234 City'";
-            }
-
-            yield break;
         }
 
-        public bool HasErrors => GetErrors("Name").OfType<string>().Any() ||
-                                 GetErrors("Description").OfType<string>().Any() ||
-                                 GetErrors("FromAddress").OfType<string>().Any() ||
-                                 GetErrors("ToAddress").OfType<string>()
-                                     .Any(); //OnPropertyChanged(nameof(Description)); 
+        private ICommand _tourSetCommand;
 
-        private void ValidateProperty(string propertyName)
+        public ICommand TourSetCommand
         {
-            OnErrorsChanged(propertyName);
+            get { return _tourSetCommand; }
+            set
+            {
+                _tourSetCommand = value;
+                OnPropertyChanged(nameof(TourSetCommand));
+            }
+        }
+
+        private ICommand _setEditModeCommand;
+
+        public ICommand SetEditModeCommand
+        {
+            get { return _setEditModeCommand; }
+            set
+            {
+                _setEditModeCommand = value;
+                OnPropertyChanged(nameof(SetEditModeCommand));
+            }
         }
     }
 }

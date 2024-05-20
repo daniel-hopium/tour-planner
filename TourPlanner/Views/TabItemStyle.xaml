@@ -1,0 +1,45 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="TabItemStyle" TargetType="TabItem">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    
+                    <Border Name="Bd"  BorderThickness="1.5" CornerRadius="4,4,0,0">
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="Blue"/>
+                        </Border.BorderBrush>
+
+                        <Grid Name="Panel">
+                            <ContentPresenter x:Name="ContentSite"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            ContentSource="Header"
+                            Margin="30,5"/>
+                        </Grid>
+                    </Border>
+                   
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Panel" Property="Background" Value="Blue" />
+                            <Setter TargetName="Panel" Property="TextElement.Foreground" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="False">
+                            <Setter TargetName="Panel" Property="Background" Value="White" />
+                            <Setter TargetName="Panel" Property="TextElement.Foreground" Value="Blue" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Panel" Property="Background" Value="LightGray" />
+                            <Setter TargetName="Panel" Property="TextElement.Foreground" Value="Gray" />
+                            <Setter TargetName="Bd" Property="Border.BorderBrush" Value="LightGray" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Cursor" Value="Hand"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

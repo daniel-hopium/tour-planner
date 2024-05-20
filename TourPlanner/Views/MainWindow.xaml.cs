@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Windows;
-using TourPlanner.Persistence.Utils;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using TourPlanner.Persistence.Repository;
 using TourPlanner.ViewModels;
 using System.Windows.Controls;
 using FontAwesome.WPF;
@@ -22,85 +18,72 @@ namespace TourPlanner.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MainViewModel _viewModel;
+        private MainViewModel _viewModel; // { get; set;  }
+        private TourListControlViewModel _tourListControlViewModel;
+        private TourViewModel _formTourViewModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            var dbContext = new TourPlannerDbContext();
-            var tourRepository = new TourRepository(dbContext);
-            _viewModel = new MainViewModel(tourRepository);
+            _viewModel = new MainViewModel();
             DataContext = _viewModel;
-            _viewModel.UpdateCompleted += ViewModel_UpdateCompleted;
+            _formTourViewModel = TourViewModel.Instance;
+            _formTourViewModel.UpdateCompleted += FormTourViewModel_UpdateCompleted;
+            _tourListControlViewModel = TourListControlViewModel.Instance;
+            _tourListControlViewModel.TourToEditSelected += TourList_TourToEditSelected;
+            _tourListControlViewModel.NowExpandedTour += TourList_NowExpandedTour;
             //Loaded += MainWindow_Loaded;
         }
 
-        public bool errorsChanged = false;
+        //public bool errorsChanged = false;
 
-        // set isExpanded of other than the one now expanded item to false -> collapse so just one tour at same time expanded
-        private void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
+        private void TourList_TourToEditSelected(object sender, EventArgs e)
         {
-            if (sender is TreeViewItem treeViewItem) { _viewModel.ExpandedCommand.Execute(treeViewItem); }
-        }
-
-
-        private T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
-        {
-            // Suchen Sie rekursiv nach dem übergeordneten Element vom Typ T
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
-
-            // Überprüfen, ob das übergeordnete Element vom richtigen Typ ist
-            if (parentObject == null)
-                return null;
-
-            T parent = parentObject as T;
-            if (parent != null)
+            _tourListControlViewModel.ResetEditModeCommand.Execute(null);
+            if(sender != null)
             {
-                return parent;
+                _formTourViewModel.TourSetCommand.Execute(sender);
+                Tour.IsEnabled = true;
+                MainTabControl.SelectedIndex = 2;
             }
             else
             {
-                // Rekursiv das übergeordnete Element suchen
-                return FindVisualParent<T>(parentObject);
+                Tour.IsEnabled = false;
+                MainTabControl.SelectedIndex = 0;
             }
         }
 
-        private void Tour_MouseLeftButtonDown(object sender, RoutedEventArgs e)
-        {
-            // Zugriff auf das ImageAwesome-Element, auf das geklickt wurde
-            ImageAwesome clickedImage = sender as ImageAwesome;
-            // Zugriff auf das übergeordnete TreeViewItem
-            TreeViewItem parentTreeViewItem = FindVisualParent<TreeViewItem>(clickedImage);
-
-            if (parentTreeViewItem != null)
-            {      
-                if (clickedImage.Name == "TourEdit")
-                {                
-                    // MessageBox.Show($"Edit {parentTreeViewItem}");
-                    _viewModel.TourEditCommand.Execute(parentTreeViewItem);
-                    Tour.IsEnabled = true;
-                    MainTabControl.SelectedIndex = 2;
-                }
-                if (clickedImage.Name == "TourReport") { _viewModel.TourReportCommand.Execute(parentTreeViewItem); }
-                if (clickedImage.Name == "TourExport") { _viewModel.ExportCommand.Execute(parentTreeViewItem); }
-                if (clickedImage.Name == "TourDelete") { _viewModel.TourDeleteCommand.Execute(parentTreeViewItem); }
-            }
-        }
-
-        private void ViewModel_UpdateCompleted(object sender, EventArgs e)
-        {
+        private void FormTourViewModel_UpdateCompleted(object sender, EventArgs e)
+        {           
+            _tourListControlViewModel.LoadToursCommand.Execute(null);
             MainTabControl.SelectedIndex = 0;
             Tour.IsEnabled = false;
         }
 
+
+        private void TourList_NowExpandedTour(object sender, EventArgs e)
+        {
+            if(sender is TourViewModel tourViewModel)
+            {
+                Route.IsEnabled = true;
+                Logs.IsEnabled = true;
+            }
+            else
+            {
+                Route.IsEnabled = false;
+                Logs.IsEnabled = false;
+            }
+        }
+
         /*private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //ShowAllTours();
+            
         }*/
 
         private void AddTour_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.TourCreateCommand.Execute(sender);
+            _tourListControlViewModel.ResetEditModeCommand.Execute(null);
+            _formTourViewModel.TourSetCommand.Execute(new TourViewModel());
             Tour.IsEnabled = true;
             MainTabControl.SelectedIndex = 2;
         }
