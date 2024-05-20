@@ -178,11 +178,14 @@ namespace TourPlanner.ViewModels
         {
             var logs = await _tourRepository.GetLogsByTourIdAsync(Id);
             TourLogs = new ObservableCollection<TourLogViewModel>(logs.Select(log => new TourLogViewModel(new TourLogModel(log))));
+            
+            
         }
 
         public void ClearLogs()
         {
             TourLogs.Clear();
+            _tourLogs.Clear();
         }
 
 

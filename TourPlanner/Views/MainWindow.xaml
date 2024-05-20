@@ -141,13 +141,13 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Button Content="Add Log" Command="{Binding SaveLogCommand}" HorizontalAlignment="Center" Margin="10"/>
+                        <Button Content="Add Log" Click="AddLog_Click" HorizontalAlignment="Center" Margin="10"/>
                         <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.TourLogs}" AutoGenerateColumns="False" CanUserAddRows="True">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Edit" Width="SizeToCells" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Command="{Binding EditLogCommand}">
+                                            <Button x:Name="TourLogEdit" Click="TourLogEdit_OnClick" >
                                                 <fa:ImageAwesome Icon="Pencil" Foreground="Black" />
                                             </Button>
                                         </DataTemplate>
@@ -160,11 +160,11 @@
                                 <DataGridTextColumn Header="Distance" Binding="{Binding Distance, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
                                 <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
                                 <DataGridTextColumn Header="Rating" Binding="{Binding Rating, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-                                
+
                                 <DataGridTemplateColumn Header="Delete" Width="SizeToCells" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Command="{Binding DeleteLogCommand}">
+                                            <Button x:Name="TourLogDelete" Click="TourLogDelete_OnClick">
                                                 <fa:ImageAwesome Icon="Trash" Foreground="Red" />
                                             </Button>
                                         </DataTemplate>

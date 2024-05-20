@@ -16,7 +16,7 @@ public class TourLogEntity
 
     [Column("tour_date")]
     [Required]
-    public string TourDate { get; set; }
+    public DateOnly TourDate { get; set; }
 
     [Column("comment")]
     public string Comment { get; set; }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using TourPlanner.Models;
 using TourPlanner.Persistence.Repository;
 using TourPlanner.Persistence.Utils;
+using TourPlanner.ViewModels.Utils;
 
 
 namespace TourPlanner.ViewModels
@@ -33,6 +35,8 @@ namespace TourPlanner.ViewModels
             _tourLog = tourLog;
         }
 
+        
+
         public int Id
         {
             get { return _tourLog.Id; }
@@ -43,24 +47,25 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        private string _tourDateString = string.Empty;
+        private string _tourDateString;
         public string TourDate
         {
             get
             {
-                if (_tourDateString != _tourLog.TourDate.ToString() && _tourDateString != string.Empty)
+                /*if (_tourDateString != _tourLog.TourDate.ToString() && _tourDateString != string.Empty)
                 {
                     return _tourDateString;
-                }
+                }*/
                 return _tourLog.TourDate.ToString();
             }
             set
             {
                 _tourDateString = value;
-
-                if (DateTime.TryParse(value, out DateTime result))
+                DateOnly? dateOnly = Helper.ExtractAndConvertDatePart(value);
+                
+                if (dateOnly.HasValue)
                 {
-                    _tourLog.TourDate = result;
+                    _tourLog.TourDate = (dateOnly.Value);
                     ValidateProperty(nameof(TourDate));
                     OnPropertyChanged(nameof(TourDate));
                 }
@@ -243,7 +248,7 @@ namespace TourPlanner.ViewModels
                 {
                     AddError(nameof(TourDate), "TourDate can not be empty");
                 }
-                else if (propertyName == "TourDate" && _tourLog.TourDate > DateTime.Now)
+                else if (propertyName == "TourDate" && _tourLog.TourDate > DateOnly.FromDateTime(DateTime.Now))
                 {
                     AddError(nameof(TourDate), "TourDate has to be in the past");
                 }
@@ -309,6 +314,15 @@ namespace TourPlanner.ViewModels
                     RemoveError(nameof(Rating));
                 }
             }
+        }
+        
+        public bool AreFieldsEmpty()
+        {
+            return string.IsNullOrWhiteSpace(TourDate) ||
+                   string.IsNullOrWhiteSpace(Difficulty) ||
+                   string.IsNullOrWhiteSpace(Distance) ||
+                   string.IsNullOrWhiteSpace(Comment) ||
+                   string.IsNullOrWhiteSpace(TotalTime);
         }
     }
 }
