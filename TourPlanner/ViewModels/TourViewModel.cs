@@ -18,6 +18,14 @@ using TourPlanner.Persistence.Utils;
 using TourPlanner.ViewModels.Utils;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using TourPlanner.Mapper;
+using System.Net;
+using System.Drawing;
+using System.Windows.Media.Imaging;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Globalization;
+using System.Windows.Shapes;
+using System.Security.Cryptography.Xml;
 
 namespace TourPlanner.ViewModels
 {
@@ -50,6 +58,10 @@ namespace TourPlanner.ViewModels
             }
         }
 
+        private string api_key = "5b3ce3597851110001cf6248e9475f9d6e4b47b5b37083ff7839b81f";
+
+        private string _uri_project = $"C:\\Users\\anste\\Documents\\Informatik_Bachelor_2022-2025\\Informatik-4.SemesterSS24\\SWEN2\\tour_planer_da\\TourPlanner"; 
+
         public Array TransportTypes => Enum.GetValues(typeof(TourPlanner.Models.TransportType));
 
         private TourMapper _tourMapper;
@@ -76,6 +88,7 @@ namespace TourPlanner.ViewModels
             _tourRepository = TourRepository.Instance;
             _tourMapper = new TourMapper();
 
+            CalculateCommand = new RelayCommand(CalculateRoute);
             TourSetCommand = new RelayCommand(SetTour);
             SaveCommand = new RelayCommand(SaveTour);
             SetEditModeCommand = new RelayCommand(SetEditMode);
@@ -87,6 +100,7 @@ namespace TourPlanner.ViewModels
             _tourRepository = TourRepository.Instance;
             _tourMapper = new TourMapper();
 
+            CalculateCommand = new RelayCommand(CalculateRoute);
             SaveCommand = new RelayCommand(SaveTour);
             SetEditModeCommand = new RelayCommand(SetEditMode);
         }
@@ -166,6 +180,9 @@ namespace TourPlanner.ViewModels
             }
         }
 
+        private double[] _coordinatesStart;
+        private double[] _coordinatesEnd;
+
         public string ToAddress
         {
             get { return _tour.ToAddress; }
@@ -204,6 +221,19 @@ namespace TourPlanner.ViewModels
             {
                 _tour.EstimatedTime = value;
                 OnPropertyChanged(nameof(EstimatedTime));
+            }
+        }
+
+        private Bitmap _bitmap;
+
+        private BitmapImage _map; 
+        public BitmapImage Map
+        {
+            get { return _map; }
+            set
+            {
+                _map = value;
+                OnPropertyChanged(nameof(Map));
             }
         }
 
@@ -252,9 +282,15 @@ namespace TourPlanner.ViewModels
         }
 
 
+        public void LoadMap()
+        {
+            Map = new BitmapImage(new Uri(_uri_project + $"{Image}"));
+        }
+
+
          public IEnumerable GetErrors(string propertyName)
          {
-             string pattern = @"^[A-Za-zßüöä ]+ +\d+[A-Za-z]? *, *\d{4,} +[A-Za-zßüöä ]+$";
+            string pattern = @"^(?:(\d{4,}\s)?[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(\s\d+[a-zA-Z]?)?)?(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*)?|([A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(\s\d+[a-zA-Z]?)?)?,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*))$";
 
              if (propertyName == "Name" && string.IsNullOrEmpty(Name))
              {                
@@ -274,12 +310,12 @@ namespace TourPlanner.ViewModels
              }
              else if (propertyName == "FromAddress" && !Regex.IsMatch(FromAddress, pattern))
              {
-                 yield return "From-Address need to follow the pattern 'Street 12, 1234 City'";
-             }
+                 yield return "'1234 City, Street 12, Country' (street&country or street&zip and streetnumber can be omitted)";  // From-Address need to follow the pattern 
+            }
              else if (propertyName == "ToAddress" && !Regex.IsMatch(ToAddress, pattern))
              {
-                 yield return "To-Address need to follow the pattern 'Street 12, 1234 City'";
-             }
+                 yield return "'1234 City, Street 12, Country' (street&country or street&zip and streetnumber can be omitted)"; // To-Address need to follow the pattern 
+            }
 
              yield break;
          }
@@ -294,6 +330,40 @@ namespace TourPlanner.ViewModels
             OnErrorsChanged(propertyName);
         }
 
+        private void CalculateRoute(object parameter)
+        {
+            CalculateRoute();
+        }
+
+        private void CalculateRoute()
+        {
+            //if(_bitmap != null) { _bitmap.Dispose();  }
+            
+            (double[] coordinatesStart, double[] bboxStart, bool successStart) = OpenRouteService.GetParametersFromApi(api_key, FromAddress);
+            if(successStart) _coordinatesStart = coordinatesStart;
+            (double[] coordinatesEnd, double[] bboxEnd, bool successEnd) = OpenRouteService.GetParametersFromApi(api_key, ToAddress);
+            if(successEnd) _coordinatesEnd = coordinatesEnd;
+
+            if(successStart && successEnd)
+            {
+                (double[][] coordinates, double[] bbox, double distance, double duration) = OpenRouteService.GetDirectionsFromApi(api_key, TransportType, $"{coordinatesStart[0].ToString("0.######", CultureInfo.InvariantCulture)},{coordinatesStart[1].ToString("0.######", CultureInfo.InvariantCulture)}", $"{coordinatesEnd[0].ToString("0.######", CultureInfo.InvariantCulture)},{coordinatesEnd[1].ToString("0.######", CultureInfo.InvariantCulture)}");
+
+                Distance = distance / 1000;
+                EstimatedTime = (int)duration / 60;
+
+                _bitmap = MapCreator.GenerateImage(coordinates, bbox, coordinatesStart, coordinatesEnd);
+                Map =  MapCreator.ConvertBitmapToBitmapImage( _bitmap );                
+            }
+
+            else
+            {
+                MessageBox.Show($"No route found!");
+
+                Distance = 0;
+                EstimatedTime = 0;
+            }
+        }
+
 
         private void SetTour(object parameter)
         {
@@ -304,6 +374,17 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(Description));
                 OnPropertyChanged(nameof(FromAddress));
                 OnPropertyChanged(nameof(ToAddress));
+                OnPropertyChanged(nameof(Distance));
+                OnPropertyChanged(nameof(EstimatedTime));
+                OnPropertyChanged(nameof(TransportType));
+
+                if(_tour.IsNew == null) 
+                {
+                    Map = new BitmapImage(new Uri(_uri_project + $"{Image}"));
+                } else
+                {
+                    Map = null;
+                }
             }          
         }      
 
@@ -319,6 +400,11 @@ namespace TourPlanner.ViewModels
             // Update
             if (_tour.IsNew == null)
             {
+                CalculateRoute();
+
+                MapCreator.SaveMap(_bitmap, TransportType.ToString(), $"{_coordinatesStart[0]}_{_coordinatesStart[1]}", $"{_coordinatesEnd[0]}_{_coordinatesEnd[1]}");
+                Image = $"/Persistence/Images/map_{TransportType.ToString()}_{_coordinatesStart[0]}_{_coordinatesStart[1]}_{_coordinatesEnd[0]}_{_coordinatesEnd[1]}.png";
+                
                 await _tourRepository.UpdateTourAsync(_tourMapper.TourModelToEntity(_tour));
                 _tour = new TourModel();
                 MessageBox.Show($"Changes to the tour have been successfully applied");
@@ -327,6 +413,11 @@ namespace TourPlanner.ViewModels
             // Create
             else
             {
+                CalculateRoute();
+
+                MapCreator.SaveMap(_bitmap, TransportType.ToString(), $"{_coordinatesStart[0]}_{_coordinatesStart[1]}", $"{_coordinatesEnd[0]}_{_coordinatesEnd[1]}");
+                Image = $"/Persistence/Images/map_{TransportType.ToString()}_{_coordinatesStart[0]}_{_coordinatesStart[1]}_{_coordinatesEnd[0]}_{_coordinatesEnd[1]}.png";
+
                 await _tourRepository.CreateTourAsync(_tourMapper.TourModelToEntity(_tour));
                 _tour = new TourModel();
                 MessageBox.Show($"New tour successfully created");
@@ -398,6 +489,18 @@ namespace TourPlanner.ViewModels
             {
                 _setEditModeCommand = value;
                 OnPropertyChanged(nameof(SetEditModeCommand));
+            }
+        }
+
+        private ICommand _calculateCommand;
+
+        public ICommand CalculateCommand
+        {
+            get { return _calculateCommand; }
+            set
+            {
+                _calculateCommand = value;
+                OnPropertyChanged(nameof(CalculateCommand));
             }
         }
     }

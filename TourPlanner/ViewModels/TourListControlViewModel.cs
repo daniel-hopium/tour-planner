@@ -112,6 +112,7 @@ namespace TourPlanner.ViewModels
                     {
                         _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
                         _expandedTour.LoadLogs();
+                        _expandedTour.LoadMap();
                     }
 
                     OnNowExpandedTour(_expandedTour);

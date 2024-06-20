@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS addresses (
     id                  SERIAL          PRIMARY KEY,
-    street              VARCHAR(255)    NOT NULL,
+    country             VARCHAR(255),
+    street              VARCHAR(255),
     housenumber         VARCHAR(255),
-    zip                 INT             NOT NULL,
+    zip                 INT,
     city                VARCHAR(255)    NOT NULL,
     created             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
@@ -26,9 +27,9 @@ CREATE TABLE IF NOT EXISTS tourlogs (
     id                  SERIAL          PRIMARY KEY,
     tour_date           DATE            NOT NULL,
     comment             VARCHAR(255),
-    tour_id_fk          INT             NOT NULL    references tours(id),
+    tour_id_fk          INT             NOT NULL    references tours(id) ON DELETE CASCADE,
     difficulty          INT             NOT NULL,
-    distance            FLOAT,
+    distance            FLOAT           NOT NULL,
     total_time          INT             NOT NULL,
     rating              INT             NOT NULL,
     created             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
@@ -36,14 +37,15 @@ CREATE TABLE IF NOT EXISTS tourlogs (
 
 -- Test- Seed
 
-INSERT INTO addresses (street, housenumber, zip, city, created)
-VALUES ('Strasse', '1a', 1200, 'Vienna', NOW()),
-       ('Hauptstrasse', '4', 1190, 'Vienna', NOW());
+INSERT INTO addresses (country, street, housenumber, zip, city, created)
+VALUES ('Austria', 'Höchstädtplatz', '6', 1200, 'Wien', NOW()),
+       ('Austria', 'Adalbert-Stifter-Straße', '73', 1200, 'Wien', NOW()),
+       ('Austria', '', '', 0, 'Salzburg', NOW());
 
 -- F�gen Sie Daten in die Tour-Tabelle ein
 INSERT INTO tours (name, description, from_address_fk, to_address_fk, transport_type, distance, est_time, image, popularity, child_friendliness, created)
-VALUES ('Tour 1', 'Description for Tour 1', 1, 1, 'hike', 1.2, 90, '/Persistence/Images/image1.png', 3, 5, NOW()),
-       ('Tour 2', 'Description for Tour 2', 1, 2, 'hike', 9.2, 270, '/Persistence/Images/image2.png', 1, 3, NOW());
+VALUES ('Tour 1', 'Description for Tour 1', 1, 3, 'car', 300, 182, '/Persistence/Images/map_car_16,378317_48,238992_12,995288_47,82287.png', 1, 5, NOW()),
+       ('Tour 2', 'Description for Tour 2', 1, 2, 'running', 2.2, 26, '/Persistence/Images/map_running_16,378317_48,238992_16,377598_48,244099.png', 1, 3, NOW());
 
 -- Insert data into the tourlogs table
 INSERT INTO tourlogs (tour_date, comment, tour_id_fk, difficulty, distance, total_time, rating, created)

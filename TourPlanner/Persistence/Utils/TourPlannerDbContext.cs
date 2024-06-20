@@ -35,7 +35,8 @@ namespace TourPlanner.Persistence.Utils
             modelBuilder.Entity<TourLogEntity>()
                 .HasOne(t => t.Tour)
                 .WithMany(t => t.Logs)
-                .HasForeignKey(t => t.TourId); 
+                .HasForeignKey(t => t.TourId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
         
     }

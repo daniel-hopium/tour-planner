@@ -65,11 +65,11 @@
                                 <TextBlock Text="{Binding TransportType}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Distance: " FontWeight="Bold"/>
+                                <TextBlock Text="Distance (km): " FontWeight="Bold"/>
                                 <TextBlock Text="{Binding Distance}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Est. Time: " FontWeight="Bold"/>
+                                <TextBlock Text="Est. Time (min): " FontWeight="Bold"/>
                                 <TextBlock Text="{Binding EstimatedTime}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">

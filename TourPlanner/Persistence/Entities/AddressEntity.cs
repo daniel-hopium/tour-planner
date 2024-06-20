@@ -12,6 +12,8 @@ namespace TourPlanner.Persistence.Entities
     {
         [Column("id")]
         public int Id { get; set; }
+        [Column("country")]
+        public string Country { get; set; }
         [Column("street")]
         public string Street {  get; set; }
         [Column("housenumber")]

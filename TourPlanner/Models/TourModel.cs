@@ -11,7 +11,7 @@ namespace TourPlanner.Models;
 
 public enum TransportType
 {
-    bike, hike, running, vacation
+    bike, hike, running, car
 }
 
 public class TourModel
@@ -32,11 +32,18 @@ public class TourModel
     //public TourModel(int id, string name, string description, string fromAddress, string toAddress, string transportType, double distance, int estimatedTime, string image, int popularity, int childFriendliness)
     public TourModel(TourEntity tourEntity)
     {
+        string fromZip = tourEntity.FromAddress.Zip > 0 ? tourEntity.FromAddress.Zip.ToString() + " " : string.Empty;
+        string toZip = tourEntity.ToAddress.Zip > 0 ? tourEntity.ToAddress.Zip.ToString() + " " : string.Empty;
+        string fromStreet = tourEntity.FromAddress.Street != string.Empty ? ", " + tourEntity.FromAddress.Street : string.Empty;
+        string toStreet = tourEntity.ToAddress.Street != string.Empty ? ", " + tourEntity.ToAddress.Street : string.Empty;
+        string fromCountry = tourEntity.FromAddress.Country != string.Empty ? ", " + tourEntity.FromAddress.Country : string.Empty;
+        string toCountry = tourEntity.ToAddress.Country != string.Empty ? ", " + tourEntity.ToAddress.Country : string.Empty;
+
         Id = tourEntity.Id;
         Name = tourEntity.Name;
         Description = tourEntity.Description;
-        FromAddress = $"{tourEntity.FromAddress.Street} {tourEntity.FromAddress.Housenumber}, {tourEntity.FromAddress.Zip} {tourEntity.FromAddress.City}";
-        ToAddress = $"{tourEntity.ToAddress.Street} {tourEntity.ToAddress.Housenumber}, {tourEntity.ToAddress.Zip} {tourEntity.ToAddress.City}";
+        FromAddress = $"{fromZip}{tourEntity.FromAddress.City}{fromStreet} {tourEntity.FromAddress.Housenumber}{fromCountry}";
+        ToAddress = $"{toZip}{tourEntity.ToAddress.City}{toStreet} {tourEntity.ToAddress.Housenumber}{toCountry}";
         TransportType = (TransportType)Enum.Parse(typeof(TransportType),tourEntity.TransportType); //tourEntity.TransportType;
         Distance = tourEntity.Distance;
         EstimatedTime = tourEntity.EstimatedTime;
@@ -54,10 +61,10 @@ public class TourModel
         FromAddress = string.Empty;
         ToAddress = string.Empty;
         Image = "/Persistence/Images/image1.png";
-        Distance = 3.2;
-        EstimatedTime = 60;
+        Distance = 0.0;
+        EstimatedTime = 0;
         Popularity = 0;
-        ChildFriendliness = 5;
+        ChildFriendliness = 0;
         IsNew = true;
     }
 }

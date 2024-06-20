@@ -64,7 +64,7 @@
 
                 <!-- Route-Tab -->
                 <TabItem x:Name="Route" Header="Route" Style="{StaticResource TabItemStyle}">
-                    <Image Source="{Binding ExpandedTour.Image}" />
+                    <Image Source="{Binding ExpandedTour.Map}" />
                 </TabItem>
 
                 <!-- TourLog-Tab -->
@@ -89,7 +89,7 @@
                                     </DataGridTemplateColumn>
 
                                     <DataGridTextColumn Header="TourDate" Binding="{Binding TourDate, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-                                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
+                                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}" Width="*"/>
                                     <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
                                     <DataGridTextColumn Header="Distance" Binding="{Binding Distance, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
                                     <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>

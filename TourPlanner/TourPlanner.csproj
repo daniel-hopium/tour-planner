@@ -10,6 +10,8 @@
     <ItemGroup>
       <None Remove="Persistence\Images\image1.png" />
       <None Remove="Persistence\Images\image2.png" />
+      <None Remove="Persistence\Images\map_bike_16,378317_48,238992_16,377598_48,244099.png" />
+      <None Remove="Persistence\Images\map_hike_16,378317_48,238992_16,355643_48,241255.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -22,13 +24,19 @@
 
     <ItemGroup>
       <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Npgsql" Version="7.0.7" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+      <PackageReference Include="System.Drawing.Common" Version="8.0.6" />
     </ItemGroup>
 
     <ItemGroup>
       <Resource Include="Persistence\Images\image1.png" />
       <Resource Include="Persistence\Images\image2.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Persistence\Resources\" />
     </ItemGroup>
 
 </Project>

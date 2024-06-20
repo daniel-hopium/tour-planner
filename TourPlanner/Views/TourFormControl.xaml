@@ -47,6 +47,8 @@
                 </StackPanel>
             </WrapPanel>
 
+            <viewUtils:IconButton  HorizontalAlignment="Center" Content="Calculate Route" Style="{StaticResource RoundedIconButton}" Command="{Binding CalculateCommand}" Background="CornflowerBlue" Margin="20" Icon="Calculator"/>
+
             <StackPanel Orientation="Vertical" Margin="0,10,0,0" MaxWidth="925">
                 <Label Content="Description"/>
                 <TextBox Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Template="{StaticResource ValidatedTextBoxTemplate}" TextChanged="TextBox_TextChanged" MinHeight="100" TextWrapping="Wrap" />
@@ -57,15 +59,15 @@
             <WrapPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center">
                 <StackPanel Orientation="Vertical" Margin="0,0,45,0">
                     <Label Content="Total Distance (km)"/>
-                    <TextBox Text="{Binding Distance, Mode=TwoWay}" MinWidth="140" Width="440" HorizontalAlignment="Stretch"  Height="22" IsEnabled="False" />
+                    <TextBox Text="{Binding Distance, Mode=OneWay}" MinWidth="140" Width="440" HorizontalAlignment="Stretch"  Height="22" IsEnabled="False" />
                 </StackPanel>
                 <StackPanel Orientation="Vertical">
                     <Label Content="Estimated Time (minutes)"/>
-                    <TextBox Text="{Binding EstimatedTime, Mode=TwoWay}" MinWidth="140" Width="440"  HorizontalAlignment="Stretch" Height="22" IsEnabled="False" />
+                    <TextBox Text="{Binding EstimatedTime, Mode=OneWay}" MinWidth="140" Width="440"  HorizontalAlignment="Stretch" Height="22" IsEnabled="False" />
                 </StackPanel>
             </WrapPanel>
 
-            <Image Source="{Binding Image}" MaxWidth="925" Margin="0 20" HorizontalAlignment="Center"/>
+            <Image Source="{Binding Map, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" MaxWidth="925" Height="Auto" Margin="0 20" Stretch="Fill" />
         </StackPanel>
     </ScrollViewer>
 </UserControl>
