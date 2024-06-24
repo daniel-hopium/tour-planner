@@ -18,9 +18,13 @@ namespace TourPlanner.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MainViewModel _viewModel; // { get; set;  }
-        private TourListControlViewModel _tourListControlViewModel;
-        private TourViewModel _formTourViewModel;
+        private readonly MainViewModel _viewModel; // { get; set;  }
+        public readonly TourListControlViewModel TourListControlViewModel;
+        private readonly TourViewModel _formTourViewModel;
+
+        private Point _origin;
+        private Point _start;
+        private double _scale = 0.45;
 
         public MainWindow()
         {
@@ -29,17 +33,58 @@ namespace TourPlanner.Views
             DataContext = _viewModel;
             _formTourViewModel = TourViewModel.Instance;
             _formTourViewModel.UpdateCompleted += FormTourViewModel_UpdateCompleted;
-            _tourListControlViewModel = TourListControlViewModel.Instance;
-            _tourListControlViewModel.TourToEditSelected += TourList_TourToEditSelected;
-            _tourListControlViewModel.NowExpandedTour += TourList_NowExpandedTour;
-            //Loaded += MainWindow_Loaded;
+            TourListControlViewModel = TourListControlViewModel.Instance;
+            TourListControlViewModel.TourToEditSelected += TourList_TourToEditSelected;
+            TourListControlViewModel.NowExpandedTour += TourList_NowExpandedTour;
+
+            MapImage.MouseWheel += Image_MouseWheel;
+            MapImage.MouseLeftButtonDown += Image_MouseLeftButtonDown;
+            MapImage.MouseLeftButtonUp += Image_MouseLeftButtonUp;
+            MapImage.MouseMove += Image_MouseMove;
         }
 
-        //public bool errorsChanged = false;
+
+        private void Image_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                _scale += 0.1;
+            }
+            else
+            {
+                _scale -= 0.1;
+            }
+
+            if (_scale < 0.45) _scale = 0.45;
+
+            scaleTransform.ScaleX = _scale;
+            scaleTransform.ScaleY = _scale;
+        }
+
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            MapImage.CaptureMouse();
+            _start = e.GetPosition(MapViewer);
+            _origin = new Point(translateTransform.X, translateTransform.Y);
+        }
+
+        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            MapImage.ReleaseMouseCapture();
+        }
+
+        private void Image_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!MapImage.IsMouseCaptured) return;
+
+            Vector v = _start - e.GetPosition(MapViewer);
+            translateTransform.X = _origin.X - v.X;
+            translateTransform.Y = _origin.Y - v.Y;
+        }
 
         private void TourList_TourToEditSelected(object sender, EventArgs e)
         {
-            _tourListControlViewModel.ResetEditModeCommand.Execute(null);
+            TourListControlViewModel.ResetEditModeCommand.Execute(null);
             if(sender != null)
             {
                 _formTourViewModel.TourSetCommand.Execute(sender);
@@ -54,8 +99,8 @@ namespace TourPlanner.Views
         }
 
         private void FormTourViewModel_UpdateCompleted(object sender, EventArgs e)
-        {           
-            _tourListControlViewModel.LoadToursCommand.Execute(null);
+        {
+            TourListControlViewModel.LoadToursCommand.Execute(null);
             MainTabControl.SelectedIndex = 0;
             Tour.IsEnabled = false;
         }
@@ -63,7 +108,7 @@ namespace TourPlanner.Views
 
         private void TourList_NowExpandedTour(object sender, EventArgs e)
         {
-            if(sender is TourViewModel tourViewModel)
+            if(sender is TourViewModel)
             {
                 Route.IsEnabled = true;
                 Logs.IsEnabled = true;
@@ -75,14 +120,10 @@ namespace TourPlanner.Views
             }
         }
 
-        /*private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            
-        }*/
 
         private void AddTour_Click(object sender, RoutedEventArgs e)
         {
-            _tourListControlViewModel.ResetEditModeCommand.Execute(null);
+            TourListControlViewModel.ResetEditModeCommand.Execute(null);
             _formTourViewModel.TourSetCommand.Execute(new TourViewModel());
             Tour.IsEnabled = true;
             MainTabControl.SelectedIndex = 2;
@@ -90,49 +131,10 @@ namespace TourPlanner.Views
 
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
-            HelpWindow helpWindow = new HelpWindow();
+            HelpWindow helpWindow = new ();
             helpWindow.Owner = this;
             helpWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             helpWindow.ShowDialog(); // This shows the Help window as a modal dialog
-        }
-        
-
-        private void AddLog_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.AddLogCommand.Execute(sender);
-        }
-
-        private void TourLogEdit_OnClick(object sender, RoutedEventArgs e)
-        {
-            // Get the button that was clicked
-            Button editButton = sender as Button;
-            if (editButton != null)
-            {
-                // Retrieve the TourLog object from the DataContext of the button
-                TourLogViewModel logToEdit = editButton.DataContext as TourLogViewModel;
-                if (logToEdit != null)
-                {
-                    // Perform the deletion or any other action
-                    _viewModel.EditLogCommand.Execute(logToEdit);
-                }
-            }
-        }
-
-        private void TourLogDelete_OnClick(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("Delete Button clicked");
-            // Get the button that was clicked
-            Button deleteButton = sender as Button;
-            if (deleteButton != null)
-            {
-                // Retrieve the TourLog object from the DataContext of the button
-                TourLogViewModel logToDelete = deleteButton.DataContext as TourLogViewModel;
-                if (logToDelete != null)
-                {
-                    // Perform the deletion or any other action
-                    _viewModel.DeleteLogCommand.Execute(logToDelete);
-                }
-            }
-        }
+        }      
     }
 }

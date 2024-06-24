@@ -1,9 +1,13 @@
-﻿using System;
+﻿using log4net;
+using System;
+using System.Reflection;
 
 namespace TourPlanner.ViewModels.Utils;
 
 public static class Helper
 {
+    private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    
     public static DateOnly? ExtractAndConvertDatePart(string dateTimeStr)
     {
         // Try to find the index of the first space which might indicate the start of the time part
@@ -12,7 +16,7 @@ public static class Helper
         if (firstSpaceIndex != -1)
         {
             // Extract only the date part up to the first space
-            datePart = dateTimeStr.Substring(0, firstSpaceIndex);
+            datePart = dateTimeStr[..firstSpaceIndex];
         }
 
         // Split the date string into components [MM, DD, YYYY]
@@ -31,14 +35,13 @@ public static class Helper
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    // Handle or log the error as needed
-                    Console.WriteLine("Failed to create DateOnly: " + ex.Message);
+                    log.Error("Failed to create DateOnly: " + ex.Message);
                     return null;
                 }
             }
         }
 
-        return null; // Return null if parsing fails or the format is incorrect
+        return null;
     }
 
 

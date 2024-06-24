@@ -14,12 +14,43 @@ using TourPlanner.ViewModels.Utils;
 using TourPlanner.ViewModels;
 using TourPlanner;
 using TourPlanner.Persistence.Utils;
+using log4net;
+using System.Reflection;
+using TourPlanner.Exceptions;
 
 namespace TourPlanner.ViewModels
 {
     public class TourListControlViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<TourViewModel> _tours = new ObservableCollection<TourViewModel>();
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly TourRepository _tourRepository;
+
+
+        // Singleton Pattern without Dependency Injection -> all ViewModels able use same TourListControlViewModel
+        private static readonly TourListControlViewModel _instance = new ();
+        public static TourListControlViewModel Instance
+        {
+            get { return _instance; }
+        }
+   
+
+        public TourListControlViewModel()
+        {
+            _tourRepository = TourRepository.Instance;
+            LoadTours();
+
+            _expandedCommand = new RelayCommand(ExpandTour);            
+            _tourEditCommand = new RelayCommand(EditTour);
+            _tourReportCommand = new RelayCommand(ReportTour);
+            _exportCommand = new RelayCommand(ExportTour);
+            _tourDeleteCommand = new RelayCommand(DeleteTour);
+            _loadToursCommand = new RelayCommand(LoadToursFromOutside);
+            _resetEditModeCommand = new RelayCommand(ResetEditModeTours);
+        }
+
+
+        private ObservableCollection<TourViewModel> _tours = new();
 
         public ObservableCollection<TourViewModel> Tours
         {
@@ -31,68 +62,48 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        // Singleton Pattern without Dependency Injection -> all ViewModels able use same TourListControlViewModel
-        private static readonly TourListControlViewModel _instance = new TourListControlViewModel();
-        public static TourListControlViewModel Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
-        static TourListControlViewModel()
-        {
-            
-        }
 
-        private readonly TourRepository _tourRepository;
-
-        public TourListControlViewModel()
-        {
-            _tourRepository = TourRepository.Instance;
-            LoadTours();
-
-            ExpandedCommand = new RelayCommand(ExpandTour);            
-            TourEditCommand = new RelayCommand(EditTour);
-            TourReportCommand = new RelayCommand(ReportTour);
-            ExportCommand = new RelayCommand(ExportTour);
-            TourDeleteCommand = new RelayCommand(DeleteTour);
-            LoadToursCommand = new RelayCommand(LoadToursFromOutside);
-            ResetEditModeCommand = new RelayCommand(ResetEditModeTours);
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        } 
+        //////////////////////// Load Tours of List ///////////////////////////////////////////
 
         private void LoadTours()
         {
-            var tourEntities = _tourRepository.GetTours();
-            var tourModels = tourEntities.Select(entity => new TourModel(entity));
+            try
+            {
+                var tourEntities = _tourRepository.GetTours();
+                var tourModels = tourEntities.Select(entity => new TourModel(entity));
 
-            Tours.Clear();
-            foreach (var tour in tourModels)
-            {
-                Tours.Add(new TourViewModel(tour));
+                Tours.Clear();
+                foreach (var tour in tourModels)
+                {
+                    Tours.Add(new TourViewModel(tour));
+                }
+                if (Tours.Any())
+                {
+                    Tours.First().IsExpanded = true;
+                }
+                else { MessageBox.Show($"No Tours created yet"); }
             }
-            if (Tours.Any())
+            catch (DALException)
             {
-                Tours.First().IsExpanded = true;
+                // MessageBox.Show($"Tours could not be loaded");  // Why when closing window or loading Tours after Logchange
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Tourlist could not be loaded: {ex}");
             }
         }
 
         private void LoadToursFromOutside(object parameter)
         {
             LoadTours();           
-        }
+        }     
 
+
+        //////////////////////// Tour Expanding funcionality (just one tour at the same time expanded) ///////////////////////////////////////////
 
         private TourViewModel? _expandedTour = null;
 
-        public TourViewModel ExpandedTour
+        public TourViewModel? ExpandedTour
         {
             get { return _expandedTour; }
             set
@@ -102,7 +113,6 @@ namespace TourPlanner.ViewModels
                     if (_expandedTour != null)
                     {
                         _expandedTour.PropertyChanged -= TourViewModel_PropertyChanged; // Unsubscribe from the previously expanded tour
-                        _expandedTour.ClearLogs();
                     }
 
                     _expandedTour = value;
@@ -111,8 +121,8 @@ namespace TourPlanner.ViewModels
                     if (_expandedTour != null)
                     {
                         _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
-                        _expandedTour.LoadLogs();
-                        _expandedTour.LoadMap();
+                        _expandedTour.LoadLogsCommand.Execute(null);
+                        _expandedTour.LoadMapCommand.Execute(null);
                     }
 
                     OnNowExpandedTour(_expandedTour);
@@ -120,16 +130,14 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        private void TourViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+
+        private void TourViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsExpanded")
             {
-                var tourViewModel = sender as TourViewModel;
-
-                if (tourViewModel != null && !tourViewModel.IsExpanded)
-                {
-                    // If the IsExpanded property of a TourViewModel becomes false, set ExpandedTour to null
-                    ExpandedTour = null;
+                if (sender is TourViewModel tourViewModel && !tourViewModel.IsExpanded)
+                {                    
+                    ExpandedTour = null;  // If the IsExpanded property of a TourViewModel becomes false, set ExpandedTour to null
                 }
             }
         }
@@ -138,67 +146,71 @@ namespace TourPlanner.ViewModels
         {
             if (parameter is TreeViewItem treeViewItem)
             {
-                var tourViewModel = treeViewItem.DataContext as TourViewModel;
-
-                if (tourViewModel != null)
+                if (treeViewItem.DataContext is TourViewModel tourViewModel)
                 {
                     ExpandedTour = tourViewModel;
 
                     foreach (var item in Tours)
                     {
-                        if (item != tourViewModel)
+                        if (item != tourViewModel && item != null)
                         {
-                            if (item != null)
-                            {
                                 item.IsExpanded = false;
-                            }
                         }
                     }
                 }
             }
         }       
 
-        public event EventHandler NowExpandedTour;
-        protected virtual void OnNowExpandedTour(object sender)
+        public event EventHandler? NowExpandedTour;
+        protected virtual void OnNowExpandedTour(object? sender)
         {
             NowExpandedTour?.Invoke(sender, EventArgs.Empty);
         }
 
 
-        public event EventHandler TourToEditSelected;
+        //////////////////////// Action Bar on Tour in List ///////////////////////////////////////////
 
-        protected virtual void SelectTourToEdit(object sender)
+        public event EventHandler? TourToEditSelected;
+
+        protected virtual void SelectTourToEdit(object? sender)
         {
             TourToEditSelected?.Invoke(sender, EventArgs.Empty);
         }
 
         private async void EditTour(object parameter)
         {
-            if (parameter is TreeViewItem treeViewItem)
+            try
             {
-                var tourViewModel = treeViewItem.DataContext as TourViewModel;
-
-                if (tourViewModel != null)
+                if (parameter is TreeViewItem treeViewItem)
                 {
-                    if(tourViewModel.IsEditMode)
+                    if (treeViewItem.DataContext is TourViewModel tourViewModel)
                     {
-                        tourViewModel.SetEditModeCommand.Execute(false);
-                        SelectTourToEdit(null);
-                        return;
-                    }
+                        if (tourViewModel.IsEditMode)
+                        {
+                            tourViewModel.SetEditModeCommand.Execute(false);
+                            SelectTourToEdit(null);
+                            return;
+                        }
 
-                    // get Data for this tour of DB and make a new tourviewmodel/ a copy so data of listet tour is not changed before saved in DB
-                    var getTourEntity = _tourRepository.GetTourByIdAsync(tourViewModel.Id);
-                    var tourEntity = await getTourEntity;
+                        // get Data for this tour of DB and make a new tourviewmodel/ a copy so data of listet tour is not changed before saved in DB
+                        var getTourEntity = _tourRepository.GetTourByIdAsync(tourViewModel.Id);
+                        var tourEntity = await getTourEntity;
 
-                    if (tourEntity != null)
-                    {                       
-                        //ToEditTour = new TourViewModel(new TourModel(tourEntity));
-                        SelectTourToEdit(new TourViewModel(new TourModel(tourEntity)));
-                        //_toEditTour.TourSetCommand.Execute(treeViewItem);
-                        tourViewModel.SetEditModeCommand.Execute(true);
+                        if (tourEntity != null)
+                        {
+                            SelectTourToEdit(new TourViewModel(new TourModel(tourEntity)));
+                            tourViewModel.SetEditModeCommand.Execute(true);
+                        }
                     }
                 }
+            }
+            catch (DALException)
+            {
+                MessageBox.Show($"Tour to edit could not be found");
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Unknown error selecting tour to edit: {ex}");
             }
         }
 
@@ -206,36 +218,100 @@ namespace TourPlanner.ViewModels
         {
             foreach (TourViewModel tour in Tours)
             {
-                if (tour != null)
-                {
-                        tour.SetEditModeCommand.Execute(false);
-                }
+                tour?.SetEditModeCommand.Execute(false);
             }
         }
 
-        private void ReportTour(object parameter)
+        private async void ReportTour(object parameter)
         {
+            try
+            {
+                if (parameter is TreeViewItem treeViewItem)
+                {
+                    if (treeViewItem.DataContext is TourViewModel tourViewModel)
+                    {
+                        await _tourRepository.GenerateTourReport(tourViewModel.Id);
+                        MessageBox.Show($"Report for {tourViewModel.Name} generated successfully.");
+                    }
+                }
+            }
+            catch (DALException)
+            {
+                MessageBox.Show($"Data for Tour-Report could not be processed");
+            }
+            catch (UtilsException)
+            {
+                MessageBox.Show($"Tour-Report could not be generated");
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Unknown error during Tour-Report generation: {ex}");
+            }
         }
 
-        private void ExportTour(object parameter)
+        private async void ExportTour(object parameter)
         {
+            try
+            {
+                if (parameter is TreeViewItem treeViewItem)
+                {
+                    if (treeViewItem.DataContext is TourViewModel tourViewModel)
+                    {
+                        await _tourRepository.GenerateTourExportAsync(tourViewModel.Id);
+                        MessageBox.Show($"Tour {tourViewModel.Name} successfully exported");
+                    }
+                }
+            }
+            catch (DALException)
+            {
+                MessageBox.Show($"Tour data for Export could not be loaded");
+            }
+            catch (UtilsException)
+            {
+                MessageBox.Show($"Tour-Export could not be generated");
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Unknown error during Tour-Export: {ex}");
+            }
         }
 
         private async void DeleteTour(object parameter)
         {
-            if (parameter is TreeViewItem treeViewItem)
-            {
-                var tourViewModel = treeViewItem.DataContext as TourViewModel;
-
-                if (tourViewModel != null)
+            try 
+            { 
+                if (parameter is TreeViewItem treeViewItem)
                 {
-                    await _tourRepository.DeleteTourByIdAsync(tourViewModel.Id);
-                    LoadTours();
-                    MessageBox.Show($"Tour successfully deleted");
+                    if (treeViewItem.DataContext is TourViewModel tourViewModel)
+                    {
+                        await _tourRepository.DeleteTourByIdAsync(tourViewModel.Id);
+                        LoadTours();
+                        MessageBox.Show($"Tour successfully deleted");
+                    }
                 }
             }
+            catch (DALException)
+            {
+                MessageBox.Show($"Tour could not be deleted");
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Unknown error during deletion of Tour: {ex}");
+            }
         }
-     
+
+
+
+        //////////////////////// Commands / Events ///////////////////////////////////////////
+
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
 
         private ICommand _expandedCommand;
 
@@ -246,18 +322,6 @@ namespace TourPlanner.ViewModels
             {
                 _expandedCommand = value;
                 OnPropertyChanged(nameof(ExpandedCommand));
-            }
-        }
-
-        private ICommand _tourCreateCommand;
-
-        public ICommand TourCreateCommand
-        {
-            get { return _tourCreateCommand; }
-            set
-            {
-                _tourCreateCommand = value;
-                OnPropertyChanged(nameof(TourCreateCommand));
             }
         }
 
@@ -273,17 +337,6 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        private ICommand _saveCommand;
-
-        public ICommand SaveCommand
-        {
-            get { return _saveCommand; }
-            set
-            {
-                _saveCommand = value;
-                OnPropertyChanged(nameof(SaveCommand));
-            }
-        }
 
         private ICommand _tourReportCommand;
 
@@ -341,6 +394,9 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(ResetEditModeCommand));
             }
         }
+
+
+        //////////////////////// Commands / Events ///////////////////////////////////////////
     }
 }
 

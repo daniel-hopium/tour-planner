@@ -12,7 +12,7 @@ namespace TourPlanner.Views
     /// </summary>
     public partial class TourListControl : UserControl
     {
-        private TourListControlViewModel _tourListViewModel;
+        private readonly TourListControlViewModel _tourListViewModel;
 
         public TourListControl()
         {

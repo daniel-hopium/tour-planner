@@ -9,6 +9,10 @@ using Newtonsoft.Json.Linq;
 using System.Drawing;
 using System.IO;
 using TourPlanner.Models;
+using System.Configuration;
+using TourPlanner.Exceptions;
+using log4net;
+using System.Reflection;
 
 namespace TourPlanner.ViewModels.Utils
 {
@@ -26,107 +30,129 @@ namespace TourPlanner.ViewModels.Utils
 
     public static class OpenRouteService
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new ();
 
-        public static (double[] coordinates, double[] bbox, bool success) GetParametersFromApi(string api_key, string text)
+        private static readonly string? _api_key = ConfigurationManager.AppSettings["OpenRouteApiKey"];
+
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static async Task<(double[] coordinates, bool success)> GetParametersFromApi(string text)
         {
             try
             {
-                string apiUrl = $"https://api.openrouteservice.org/geocode/search?api_key={api_key}&text={Uri.EscapeDataString(text)}";
+                string apiUrl = $"https://api.openrouteservice.org/geocode/search?api_key={_api_key}&text={Uri.EscapeDataString(text)}";
                 
                 var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-                //using HttpResponseMessage response = client.Get(apiUrl);
-
-                var response = client.Send(request);
+                var response = await client.SendAsync(request);  
                 response.EnsureSuccessStatusCode();
-                string responseBody = response.Content.ReadAsStringAsync().Result; ;
 
-                dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
+                string responseBody = await response.Content.ReadAsStringAsync();
+                dynamic? jsonResponse = JsonConvert.DeserializeObject(responseBody);
 
-                double[] coordinates = ((JArray)jsonResponse.features.First.geometry.coordinates).Select(jv => (double)jv).ToArray();
-                double[] bbox = ((JArray)jsonResponse.bbox).Select(jv => (double)jv).ToArray();
+                if (jsonResponse == null)
+                {
+                    double[] coordinat = { 0.0, 0.0 };
+                    return (coordinat, false);
+                }
 
-                return (coordinates, bbox, true);
+                double[] coordinates = ((JArray)jsonResponse.features.First.geometry.coordinates).Select(jv => (double)jv).ToArray();              
+
+                return (coordinates, true);
             }
-            catch (HttpRequestException e)
+            catch (Exception ex)
             {
-                double[] coordinates = { 0.0, 0.0 };
-                double[] bbox = { 0.0, 0.0, 0.0, 0.0 };
-                return (coordinates, bbox, false);
+                log.Error($"Could not GetParametersFromApi: {ex}");
+                throw new UtilsException("Error in OpenRouteService.GetParametersFromApi", ex);
             }
         }      
 
-        public static Bitmap GetTile(int zoom, double x_tile, double y_tile) 
+        public static async Task<Bitmap> GetTileAsync(int zoom, double x_tile, double y_tile) 
         {
-            string tileUrl = $"https://tile.openstreetmap.org/{zoom}/{x_tile}/{y_tile}.png";
-
-            var request = new HttpRequestMessage(HttpMethod.Get, tileUrl);
-            request.Headers.Add("User-Agent", "TourPlanner/1.0");
-
-            var response = client.Send(request);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                using (Stream responseStream = response.Content.ReadAsStream())
+                string tileUrl = $"https://tile.openstreetmap.org/{zoom}/{x_tile}/{y_tile}.png";
+
+                var request = new HttpRequestMessage(HttpMethod.Get, tileUrl);
+                request.Headers.Add("User-Agent", "TourPlanner/1.0");
+
+                var response = await client.SendAsync(request);
+                if (response.IsSuccessStatusCode)
                 {
-                    return new Bitmap(responseStream);
+                    using Stream responseStream = await response.Content.ReadAsStreamAsync();
+                    {
+                        return new Bitmap(responseStream);
+                    }
+                }
+                else
+                {
+                    return CreateDefaultBitmap();
                 }
             }
-            else
+            catch (Exception ex)
             {
-                return CreateDefaultBitmap();
+                log.Error($"Could not GetTilesFromApi: {ex}");
+                throw new UtilsException("Error in OpenRouteService.GetTileAsync", ex);
             }
         }
 
         private static Bitmap CreateDefaultBitmap()
         {
-            int width = 256;
-            int height = 256;
-            Bitmap defaultBitmap = new Bitmap(width, height);
-            using (Graphics g = Graphics.FromImage(defaultBitmap))
+            try
             {
-                g.Clear(Color.Gray); // Set background color to gray
-                g.DrawString("No Image", new Font("Arial", 16), Brushes.Red, new PointF(50, 100));
+                int width = 256;
+                int height = 256;
+                Bitmap defaultBitmap = new(width, height);
+                using (Graphics g = Graphics.FromImage(defaultBitmap))
+                {
+                    g.Clear(Color.Gray); // Set background color to gray
+                    g.DrawString("No Image", new Font("Arial", 16), Brushes.Red, new PointF(50, 100));
+                }
+                return defaultBitmap;
             }
-            return defaultBitmap;
+            catch (Exception ex)
+            {
+                throw new UtilsException("Error in OpenRouteService.CreateDefaultBitmap", ex);
+            }
         }
 
-        public static (double[][] coordinates, double[] bbox, double distance, double duration) GetDirectionsFromApi(string api_key, TransportType transportType, string start, string end)
+        public static async Task<(double[][] coordinates, double[] bbox, double distance, double duration)> GetDirectionsFromApi(TransportType transportType, string start, string end)
         {
-            string transport = string.Empty;
-            switch (transportType)
+            try
             {
-                case TransportType.bike: transport = "cycling-regular"; break;
-                case TransportType.hike: transport = "foot-hiking"; break;
-                case TransportType.running: transport = "foot-walking"; break;
-                case TransportType.car: transport = "driving-car"; break;
+                string transport = string.Empty;
+                switch (transportType)
+                {
+                    case TransportType.bike: transport = "cycling-regular"; break;
+                    case TransportType.hike: transport = "foot-hiking"; break;
+                    case TransportType.running: transport = "foot-walking"; break;
+                    case TransportType.car: transport = "driving-car"; break;
+                }
+
+                string apiUrl = $"https://api.openrouteservice.org/v2/directions/{transport}?api_key={_api_key}&start={Uri.EscapeDataString(start)}&end={Uri.EscapeDataString(end)}";
+
+                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                dynamic? jsonResponse = JsonConvert.DeserializeObject(responseBody);
+
+                if (jsonResponse != null)
+                {
+                    double[][] coordinates = ((JArray)jsonResponse.features.First.geometry.coordinates).Select(jv => jv.Select(coord => (double)coord).ToArray()).ToArray();
+                    double[] bbox = ((JArray)jsonResponse.bbox).Select(jv => (double)jv).ToArray();
+                    double distance = jsonResponse.features.First.properties.segments.First.distance;
+                    double duration = jsonResponse.features.First.properties.segments.First.duration;
+                    return (coordinates, bbox, distance, duration);
+                }
+
+                throw new InvalidOperationException("No route found");
             }
-
-            // Beispiel-URL der API, die die Parameter liefert
-            string apiUrl = $"https://api.openrouteservice.org/v2/directions/{transport}?api_key={api_key}&start={Uri.EscapeDataString(start)}&end={Uri.EscapeDataString(end)}";
-            
-            /*var response = await client.GetStringAsync(apiUrl);
-             
-            dynamic jsonResponse = JsonConvert.DeserializeObject(response);*/
-
-            var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-            //using HttpResponseMessage response = client.Get(apiUrl);
-
-            var response = client.Send(request);
-            response.EnsureSuccessStatusCode();
-            string responseBody = response.Content.ReadAsStringAsync().Result; ;
-
-            /*using HttpResponseMessage response = await client.GetAsync(apiUrl);
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();*/
-
-            dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
-
-            double[][] coordinates = ((JArray)jsonResponse.features.First.geometry.coordinates).Select(jv => jv.Select(coord => (double)coord).ToArray()).ToArray();
-            double[] bbox = ((JArray)jsonResponse.bbox).Select(jv => (double)jv).ToArray();
-            double distance = jsonResponse.features.First.properties.segments.First.distance;
-            double duration = jsonResponse.features.First.properties.segments.First.duration; 
-
-            return (coordinates, bbox, distance, duration);
+            catch (Exception ex)
+            {
+                log.Error($"Could not GetDirectionsFromApi: {ex}");
+                throw new UtilsException("Error in OpenRouteService.GetDirectionsFromApi", ex);
+            }
         }
     }
 }

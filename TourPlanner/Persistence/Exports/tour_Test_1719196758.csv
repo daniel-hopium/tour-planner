@@ -1,0 +1,5 @@
+﻿Name,Description,FromAddress,ToAddress,TransportType,Distance,EstimatedTime,Image,Popularity,ChildFriendliness
+Test,test,"Traunstein, Deutschland ","Traunreut, Deutschland ",bike,14.0649,48,"bike_12,637012_47,868936_12,593247_47,9626.png",1,5
+
+TourDate,Comment,Difficulty,Distance,TotalTime,Rating
+06/11/2024,vfbgn,1,0,0,1

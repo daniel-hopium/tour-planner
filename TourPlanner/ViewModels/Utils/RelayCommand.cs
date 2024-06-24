@@ -18,7 +18,7 @@ namespace TourPlanner.ViewModels.Utils
             _canExecute = canExecute;
         }
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {

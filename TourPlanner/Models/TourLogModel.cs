@@ -9,7 +9,7 @@ public class TourLogModel
     public string Comment { get; set; }
     public int TourId { get; set; }
     public int Difficulty { get; set; }
-    public double? Distance { get; set; }
+    public double Distance { get; set; }
     public int TotalTime { get; set; }
     public int Rating { get; set; }
     public DateTime Created { get; set; }

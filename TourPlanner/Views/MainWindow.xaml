@@ -17,6 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <viewModel:TourListControlViewModel x:Key="TourListControlViewModel" />
+            <viewModel:TourLogListControlViewModel x:Key="TourLogListControllViewModel" />
         </ResourceDictionary>
     </Window.Resources>
 
@@ -47,7 +48,8 @@
 
             <!-- Button Leiste -->
             <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Margin="10">
-                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Summarize" Icon="BarChart" Background="Green"/>
+                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Summarize" Command="{Binding SummarizeReportCommand}" Icon="BarChart" Background="Green"/>
+                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Import Tour" Command="{Binding ImportTourCommand}" Icon="Upload" Background="Gold"/>
                 <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Add Tour" Click="AddTour_Click" Icon="Plus" Margin="5 5 40 5"/>
                 <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Help" Click="HelpButton_Click" Icon="InfoCircle" Background="White" Foreground="Blue"/>
             </StackPanel>
@@ -64,50 +66,25 @@
 
                 <!-- Route-Tab -->
                 <TabItem x:Name="Route" Header="Route" Style="{StaticResource TabItemStyle}">
-                    <Image Source="{Binding ExpandedTour.Map}" />
+                    <Grid>
+                        <ScrollViewer Name ="MapViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                            <Viewbox>
+                                <Image Name="MapImage" Source="{Binding ExpandedTour.Map}" RenderTransformOrigin="0.5, 0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform x:Name="scaleTransform" ScaleX="0.45" ScaleY="0.45"/>
+                                            <TranslateTransform x:Name="translateTransform" X="-620" Y="-400"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Viewbox>
+                        </ScrollViewer>
+                    </Grid>
                 </TabItem>
 
                 <!-- TourLog-Tab -->
                 <TabItem  x:Name="Logs" Header="Tour Logs" Style="{StaticResource TabItemStyle}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <viewUtils:IconButton Content="Add Log" Style="{StaticResource RoundedIconButton}" Click="AddLog_Click" Margin="20" Icon="Plus"/>
-                            <DataGrid Grid.Row="1" ItemsSource="{Binding ExpandedTour.TourLogs}" AutoGenerateColumns="False" CanUserAddRows="True" IsReadOnly="True">
-                                <DataGrid.Columns>
-                                    <DataGridTemplateColumn Header="Edit" Width="SizeToCells" IsReadOnly="True">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button x:Name="TourLogEdit" Click="TourLogEdit_OnClick" >
-                                                    <fa:ImageAwesome Icon="Pencil" Foreground="Black" />
-                                                </Button>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-
-                                    <DataGridTextColumn Header="TourDate" Binding="{Binding TourDate, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-                                    <DataGridTextColumn Header="Comment" Binding="{Binding Comment, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}" Width="*"/>
-                                    <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-                                    <DataGridTextColumn Header="Distance" Binding="{Binding Distance, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-                                    <DataGridTextColumn Header="Total Time" Binding="{Binding TotalTime, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-                                    <DataGridTextColumn Header="Rating" Binding="{Binding Rating, UpdateSourceTrigger=LostFocus, ValidatesOnNotifyDataErrors=True}"/>
-
-                                    <DataGridTemplateColumn Header="Delete" Width="SizeToCells" IsReadOnly="True">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button x:Name="TourLogDelete" Click="TourLogDelete_OnClick">
-                                                    <fa:ImageAwesome Icon="Trash" Foreground="Red" />
-                                                </Button>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    </ScrollViewer>
+                    <local:TourLogListControl/>
                 </TabItem>
 
                 <!-- TourForm-Tab -->

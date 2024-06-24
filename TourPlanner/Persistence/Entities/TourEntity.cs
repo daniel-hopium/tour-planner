@@ -20,13 +20,14 @@ public class TourEntity
     public string Description { get; set; }
     [Column("from_address_fk")]
     public int FromAddressId {  get; set; }
-    public AddressEntity FromAddress {  get; set; }
+    [ForeignKey("FromAddressId")]
+    public virtual AddressEntity FromAddress {  get; set; }
     [Column("to_address_fk")]
     public int ToAddressId { get; set; }
-    public AddressEntity ToAddress { get; set; }
+    [ForeignKey("ToAddressId")]
+    public virtual AddressEntity ToAddress { get; set; }
     [Column("transport_type")]
     public string TransportType { get; set; }
-    //public TourPlanner.Models.TransportType TransportType { get; set; }
     [Column("distance")]
     public double Distance { get; set; }
     [Column("est_time")]
@@ -36,7 +37,7 @@ public class TourEntity
     [Column("popularity")]
     public int Popularity { get; set; }
     [Column("child_friendliness")]
-    public int ChildFriendliness {  get; set; }
+    public int? ChildFriendliness {  get; set; }
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     [Column("created")]
     public DateTime Created { get; set; }

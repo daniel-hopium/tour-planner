@@ -15,6 +15,11 @@ using System.Collections;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
+using System.Configuration;
+using TourPlanner.Exceptions;
+using System.Globalization;
+using log4net;
+using System.Reflection;
 
 namespace TourPlanner.ViewModels.Utils
 {  
@@ -28,9 +33,10 @@ namespace TourPlanner.ViewModels.Utils
             MARKER_RED_32px
         }
 
-        public record GeoCoordinate(double lon, double lat) { }
+        public record GeoCoordinate(double Lon, double Lat) { }
 
-        private static string _uri_project = $"C:\\Users\\anste\\Documents\\Informatik_Bachelor_2022-2025\\Informatik-4.SemesterSS24\\SWEN2\\tour_planer_da\\TourPlanner";
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 
         public static int Zoom { get; set; } = 18;
 
@@ -55,173 +61,175 @@ namespace TourPlanner.ViewModels.Utils
         }
 
 
-        public static Bitmap GenerateImage(double[][] coordinates, double[] bbox, double[] coordinatesStart, double[] coordinatesEnd)
+        public static async Task<Bitmap> GenerateImageAsync(double[][] coordinates, double[] bbox, double[] coordinatesStart, double[] coordinatesEnd)
         {
-            List<GeoCoordinate> markers = new List<GeoCoordinate>();
-
-            GeoCoordinate startMarker = new GeoCoordinate(coordinatesStart[0], coordinatesStart[1]);
-            GeoCoordinate endMarker = new GeoCoordinate(coordinatesEnd[0], coordinatesEnd[1]); 
-            markers.Add(startMarker);
-            markers.Add(endMarker);
-
-            int zoom = Zoom;
-
-            const int MaxBitmapWidth = 3624;
-            const int MaxBitmapHeight = 2048;
-            const int TileSize = 256;
-
-            double aspectRatio = 16.0 / 9.0;
-            // current aspect ratio of the bounding box
-            double currentAspectRatio = (bbox[2] - bbox[0]) / (bbox[3] - bbox[1]);
-
-            double mal = 0.0; 
-            double var3 = 0.0; 
-            double z = 0.0; 
-
-            // Calculate the tile numbers for each corner of the bounding box
-            Tile topLeftTile = Latlon2Tile(bbox[3], bbox[0], Zoom); 
-            Tile bottomRightTile = Latlon2Tile(bbox[1], bbox[2], Zoom); 
-
-            // Determine the number of tiles to fetch in each dimension
-            int tilesX = bottomRightTile.X - topLeftTile.X + 1;
-            int tilesY = bottomRightTile.Y - topLeftTile.Y + 1;
-
-            int currentWidth = tilesX * TileSize;
-            int currentHeight = tilesY * TileSize;
-
-
-            if (currentAspectRatio > aspectRatio)
+            try
             {
-                mal = ((bbox[2] - bbox[0]) / aspectRatio) / (bbox[3] - bbox[1]);
-                var3 = (bbox[3] - bbox[1]) * mal;
-                z = var3 - (bbox[3] - bbox[1]);
+                List<GeoCoordinate> markers = new ();
 
-                while (true)
+                GeoCoordinate startMarker = new (coordinatesStart[0], coordinatesStart[1]);
+                GeoCoordinate endMarker = new (coordinatesEnd[0], coordinatesEnd[1]); 
+                markers.Add(startMarker);
+                markers.Add(endMarker);
+
+                int zoom = Zoom;
+
+                const int MaxBitmapWidth = 3624;
+                const int MaxBitmapHeight = 2048;
+
+                double aspectRatio = 16.0 / 9.0;
+                double currentAspectRatio = (bbox[2] - bbox[0]) / (bbox[3] - bbox[1]);
+
+                double mal; 
+                double var3; 
+                double z; 
+
+                // Calculate the tile numbers for each corner of the bounding box
+                Tile topLeftTile = Latlon2Tile(bbox[3], bbox[0], Zoom); 
+                Tile bottomRightTile = Latlon2Tile(bbox[1], bbox[2], Zoom); 
+
+                // Determine the number of tiles to fetch in each dimension
+                int tilesX = bottomRightTile.X - topLeftTile.X + 1;
+                int tilesY = bottomRightTile.Y - topLeftTile.Y + 1;
+
+                // of bitmap
+                int currentWidth; 
+                int currentHeight;
+
+           
+                if (currentAspectRatio > aspectRatio)
                 {
-                    // Berechne die Kachelkoordinaten für den aktuellen Zoom-Level
-                    topLeftTile = Latlon2Tile(bbox[3] + (z / 4), bbox[0], zoom);
-                    bottomRightTile = Latlon2Tile(bbox[1] - (z / 2), bbox[2], zoom);
+                    mal = ((bbox[2] - bbox[0]) / aspectRatio) / (bbox[3] - bbox[1]);
+                    var3 = (bbox[3] - bbox[1]) * mal;
+                    z = var3 - (bbox[3] - bbox[1]);
 
-                    // Bestimme die Anzahl der Kacheln in X- und Y-Richtung
-                    tilesX = bottomRightTile.X - topLeftTile.X + 1;
-                    tilesY = bottomRightTile.Y - topLeftTile.Y + 1;
-
-                    // Berechne die aktuelle Breite und Höhe der Bitmap
-                    currentWidth = tilesX * 256;
-                    currentHeight = tilesY * 256;
-
-                    // Überprüfe, ob die aktuelle Breite und Höhe die maximal erlaubten Werte überschreiten
-                    if (currentWidth <= MaxBitmapWidth && currentHeight <= MaxBitmapHeight)
+                    while (true)
                     {
-                        break;  // Wenn die Abmessungen passen, brich die Schleife
+                        // Calculate tile-coordinates for current zoom-level
+                        topLeftTile = Latlon2Tile(bbox[3] + (z / 4), bbox[0], zoom);
+                        bottomRightTile = Latlon2Tile(bbox[1] - (z / 2), bbox[2], zoom);
+
+                        // Calculate number of tiles in x-/Y-dirction
+                        tilesX = bottomRightTile.X - topLeftTile.X + 1;
+                        tilesY = bottomRightTile.Y - topLeftTile.Y + 1;
+
+                        currentWidth = tilesX * 256;
+                        currentHeight = tilesY * 256;
+
+
+                        if (currentWidth <= MaxBitmapWidth && currentHeight <= MaxBitmapHeight)
+                        {
+                            break;
+                        }
+
+                        zoom--;
+
+                        if (zoom < 0)
+                        {
+                            throw new InvalidOperationException("Zoom level cannot be reduced further.");
+                        }
                     }
-
-                    zoom--;
-
-                    if (zoom < 0)
-                    {
-                        throw new InvalidOperationException("Zoom level cannot be reduced further.");
-                    }
-                }              
-            }
-            else if(currentAspectRatio < aspectRatio) 
-            {
-                mal = (aspectRatio * (bbox[3] - bbox[1])) / (bbox[2] - bbox[0]);
-                var3 = (bbox[2] - bbox[0]) * mal;
-                z = var3 - (bbox[2] - bbox[0]);
-
-                while (true)
+                }
+                else if (currentAspectRatio < aspectRatio)
                 {
-                    // Berechne die Kachelkoordinaten für den aktuellen Zoom-Level
-                    topLeftTile = Latlon2Tile(bbox[3], bbox[0] - (z / 2), zoom);
-                    bottomRightTile = Latlon2Tile(bbox[1], bbox[2] + z, zoom);
+                    mal = (aspectRatio * (bbox[3] - bbox[1])) / (bbox[2] - bbox[0]);
+                    var3 = (bbox[2] - bbox[0]) * mal;
+                    z = var3 - (bbox[2] - bbox[0]);
 
-                    // Bestimme die Anzahl der Kacheln in X- und Y-Richtung
-                    tilesX = bottomRightTile.X - topLeftTile.X + 1;
-                    tilesY = bottomRightTile.Y - topLeftTile.Y + 1;
-
-                    // Berechne die aktuelle Breite und Höhe der Bitmap
-                    currentWidth = tilesX * 256;
-                    currentHeight = tilesY * 256;
-
-                    // Überprüfe, ob die aktuelle Breite und Höhe die maximal erlaubten Werte überschreiten
-                    if (currentWidth <= MaxBitmapWidth && currentHeight <= MaxBitmapHeight)
-                    {                       
-                        break;  // Wenn die Abmessungen passen, brich die Schleife
-                    }
-
-                    zoom--;
-
-                    if (zoom < 0)
+                    while (true)
                     {
-                        throw new InvalidOperationException("Zoom level cannot be reduced further.");
-                    }
-                }            
-            }
+                        topLeftTile = Latlon2Tile(bbox[3], bbox[0] - (z / 2), zoom);
+                        bottomRightTile = Latlon2Tile(bbox[1], bbox[2] + z, zoom);
+
+                        tilesX = bottomRightTile.X - topLeftTile.X + 1;
+                        tilesY = bottomRightTile.Y - topLeftTile.Y + 1;
+
+                        currentWidth = tilesX * 256;
+                        currentHeight = tilesY * 256;
 
 
-            System.Drawing.Point topLeftTilePixel = new System.Drawing.Point(topLeftTile.X * 256, topLeftTile.Y * 256);
+                        if (currentWidth <= MaxBitmapWidth && currentHeight <= MaxBitmapHeight)
+                        {
+                            break;
+                        }
 
-            List<System.Drawing.Point> routePoints = new List<System.Drawing.Point>();
+                        zoom--;
 
-            foreach (var coord in coordinates)
-            {
-                double lon = coord[0];
-                double lat = coord[1];
-                var tile = Latlon2Tile(lat, lon, zoom);
-
-                System.Drawing.Point globalPos = LatLonToPixel(lat, lon, zoom);
-                System.Drawing.Point relativePos = new System.Drawing.Point(globalPos.X - topLeftTilePixel.X, globalPos.Y - topLeftTilePixel.Y);
-                routePoints.Add(new System.Drawing.Point(relativePos.X, relativePos.Y));
-            }
-
-            Bitmap map = new Bitmap(tilesX * 256, tilesY * 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            using (Graphics g = Graphics.FromImage(map))
-            {
-                // Fetch and draw each tile
-                for (int x = topLeftTile.X; x <= bottomRightTile.X; x++)
-                {
-                    for (int y = topLeftTile.Y; y <= bottomRightTile.Y; y++)
-                    {
-                        Bitmap tileImage = OpenRouteService.GetTile(zoom, x, y);
-                        int xPos = (x - topLeftTile.X) * 256;
-                        int yPos = (y - topLeftTile.Y) * 256;
-                        g.DrawImage(tileImage, xPos, yPos);
-                        //tileImage.Dispose();
+                        if (zoom < 0)
+                        {
+                            throw new InvalidOperationException("Zoom level cannot be reduced further.");
+                        }
                     }
                 }
 
-                // Draw route
-                if (routePoints.Count > 1)
-                {
-                    System.Drawing.Pen redPen = new System.Drawing.Pen(System.Drawing.Color.Red);
-                    redPen.Width = 7;
 
-                    g.DrawLines(redPen, routePoints.ToArray());
-                    redPen.Dispose();
+                System.Drawing.Point topLeftTilePixel = new(topLeftTile.X * 256, topLeftTile.Y * 256);
+
+                List<System.Drawing.Point> routePoints = new();
+
+                foreach (var coord in coordinates)
+                {
+                    double lon = coord[0];
+                    double lat = coord[1];
+
+                    System.Drawing.Point globalPos = LatLonToPixel(lat, lon, zoom);
+                    System.Drawing.Point relativePos = new(globalPos.X - topLeftTilePixel.X, globalPos.Y - topLeftTilePixel.Y);
+                    routePoints.Add(new System.Drawing.Point(relativePos.X, relativePos.Y));
                 }
 
+                Bitmap map = new(tilesX * 256, tilesY * 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                // Draw markers
-                foreach (var marker in markers)
+                using (Graphics g = Graphics.FromImage(map))
                 {
-                    Bitmap markerIcon = null;
-                    if (marker == startMarker)
+                    // Fetch and draw each tile
+                    for (int x = topLeftTile.X; x <= bottomRightTile.X; x++)
                     {
-                        markerIcon = LoadMarkerIcon(Marker.MARKER_RED_16px);
+                        for (int y = topLeftTile.Y; y <= bottomRightTile.Y; y++)
+                        {
+                            Bitmap tileImage = await OpenRouteService.GetTileAsync(zoom, x, y);
+                            int xPos = (x - topLeftTile.X) * 256;
+                            int yPos = (y - topLeftTile.Y) * 256;
+                            g.DrawImage(tileImage, xPos, yPos);
+                            tileImage.Dispose();
+                        }
                     }
-                    else
+
+
+                    // Draw route
+                    if (routePoints.Count > 1)
                     {
-                        markerIcon = LoadMarkerIcon(Marker.MARKER_RED_32px);
+                        using System.Drawing.Pen redPen = new(System.Drawing.Color.Red) { Width = 7 };
+
+                        g.DrawLines(redPen, routePoints.ToArray());
+                        redPen.Dispose();
                     }
-                    System.Drawing.Point globalPos = LatLonToPixel(marker.lat, marker.lon, zoom);
-                    System.Drawing.Point relativePos = new System.Drawing.Point(globalPos.X - topLeftTilePixel.X, globalPos.Y - topLeftTilePixel.Y);
-                    g.DrawImage(markerIcon, relativePos);
-                    markerIcon.Dispose();
+
+
+                    // Draw markers
+                    foreach (var marker in markers)
+                    {
+                        Bitmap? markerIcon;
+                        if (marker == startMarker)
+                        {
+                            markerIcon = LoadMarkerIcon(Marker.MARKER_RED_16px);
+                        }
+                        else
+                        {
+                            markerIcon = LoadMarkerIcon(Marker.MARKER_RED_32px);
+                        }
+                        System.Drawing.Point globalPos = LatLonToPixel(marker.Lat, marker.Lon, zoom);
+                        System.Drawing.Point relativePos = new(globalPos.X - topLeftTilePixel.X, globalPos.Y - topLeftTilePixel.Y);
+                        g.DrawImage(markerIcon, relativePos);
+                        markerIcon.Dispose();
+                    }
                 }
+                return map;
             }
-            return map;
+            catch (Exception ex)
+            {
+                log.Error($"Error during Map-Image genration: {ex}");
+                throw new UtilsException("Error in MapCreator.GenerateImageAsync", ex);
+            }
         }
 
 
@@ -236,36 +244,68 @@ namespace TourPlanner.ViewModels.Utils
                 _ => throw new ArgumentException("Unknown marker type"),
             };
 
-            string resourcePath = $"{_uri_project}\\Persistence\\Resources\\{filename}.png"; // Adjust this path accordingly
+            string resourcePath = $"{ConfigurationManager.AppSettings["BaseDirectory"]}Persistence\\Resources\\{filename}.png"; 
 
             return new Bitmap(resourcePath);
         }
 
         public static void SaveMap(Bitmap map, string transport, string start, string end)
         {
-            string fileName = $"{_uri_project}\\Persistence\\Images\\map_{transport}_{start}_{end}.png";
-            
-            if (map != null && !File.Exists(fileName))
+            try
             {
-                    map.Save(fileName, ImageFormat.Png);             
-            }          
+                string fileName = $"{ConfigurationManager.AppSettings["ImagesDirectory"]}{transport}_{start}_{end}.png";
+
+                if (map != null && !File.Exists(fileName))
+                {
+                    map.Save(fileName, ImageFormat.Png);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Map could not be saved: {ex}");
+                throw new UtilsException("Error in MapCreator.SaveMap", ex);
+            }
+        }
+
+        public static async Task DownloadMapFromApi(TourPlanner.Models.TransportType transportType, double[] start, double[] end)
+        {
+            try
+            {
+                if (!File.Exists($"{ConfigurationManager.AppSettings["ImagesDirectory"]}{transportType}_{start}_{end}.png"))
+                {
+                    (double[][] coordinates, double[] bbox, _, _) = await OpenRouteService.GetDirectionsFromApi(transportType, $"{start[0].ToString("0.######", CultureInfo.InvariantCulture)},{start[1].ToString("0.######", CultureInfo.InvariantCulture)}", $"{end[0].ToString("0.######", CultureInfo.InvariantCulture)},{end[1].ToString("0.######", CultureInfo.InvariantCulture)}");
+
+                    SaveMap(await GenerateImageAsync(coordinates, bbox, start, end), transportType.ToString(), $"{start[0]}_{start[1]}", $"{end[0]}_{end[1]}");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Map could not be downloaded: {ex}");
+                throw new UtilsException("Error in MapCreator.DownloadMapFromApi", ex);
+            }
         }
 
         public static BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap) 
         {
-            using (MemoryStream memory = new MemoryStream())
-            {
-                bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
-                //memory.Seek(0, SeekOrigin.Begin);
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
+            try 
+            { 
+                using MemoryStream memory = new ();
+                {
+                    bitmap.Save(memory, ImageFormat.Png);
+                    memory.Position = 0;
+                    BitmapImage bitmapImage = new ();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
 
-                bitmapImage.Freeze();
-                return bitmapImage;
+                    bitmapImage.Freeze();
+                    return bitmapImage;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UtilsException("Error in MapCreator.ConvertBitmapToBitmapImage", ex);
             }
         }
     }

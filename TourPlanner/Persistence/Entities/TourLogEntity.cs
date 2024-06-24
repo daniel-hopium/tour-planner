@@ -24,14 +24,15 @@ public class TourLogEntity
     [Column("tour_id_fk")]
     [Required]
     public int TourId { get; set; }
-    public TourEntity Tour { get; set; }
+    [ForeignKey("TourId")]
+    public virtual TourEntity Tour { get; set; }
 
     [Column("difficulty")]
     [Required]
     public int Difficulty { get; set; }
 
     [Column("distance")]
-    public double? Distance { get; set; }
+    public double Distance { get; set; }
 
     [Column("total_time")]
     [Required]

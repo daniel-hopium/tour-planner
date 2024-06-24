@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Proxies;
 using TourPlanner.Persistence.Entities;
 
 
@@ -18,7 +20,10 @@ namespace TourPlanner.Persistence.Utils
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(DatabaseManager.ConnectionString);
+            optionsBuilder
+                .UseNpgsql(DatabaseManager.ConnectionString)
+                .EnableDetailedErrors()
+                .UseLazyLoadingProxies();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

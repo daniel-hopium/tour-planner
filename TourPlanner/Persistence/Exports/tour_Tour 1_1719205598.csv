@@ -1,0 +1,7 @@
+﻿Name,Description,FromAddress,ToAddress,TransportType,Distance,EstimatedTime,Image,Popularity,ChildFriendliness
+Tour 1,Description for Tour 1,"1200 Wien, Höchstädtplatz 6, Austria","Salzburg, Austria ",car,299.99629999999996,182,"car_16,378317_48,238992_12,995288_47,82287.png",2,5
+
+TourDate,Comment,Difficulty,Distance,TotalTime,Rating
+05/01/2023,"Nice weather, challenging paths",3,1.2,60,5
+06/11/2024,fghjki,0,0,0,0
+05/02/2023,Perfect day for a long hike,5,1.5,90,5

@@ -1,54 +1,71 @@
 ﻿using System;
 using Npgsql;
+using System.Configuration;
+using System.Data;
+using System.Reflection;
+using System.Windows;
 
 namespace TourPlanner.Persistence.Utils;
 
-public class DatabaseManager
+public static class DatabaseManager
 {
-    private const string DefaultConnectionString = "Host=127.0.0.1;Port=5432;Username=postgres;Password=postgres;Database=tour_planner_db";
-    private static NpgsqlConnection? _dbConnection;
+    private static readonly string _connectionString = ConfigurationManager.ConnectionStrings["DbConnectionString"].ConnectionString;
 
-    // Public property to access the database connection string
-    public static string ConnectionString { get; } = DefaultConnectionString;
-    
-    // Property to access the database connection instance
-    public static NpgsqlConnection DbConnection
-    {
-        get
+    public static string ConnectionString 
+    {  
+        get 
         {
-            if (_dbConnection == null)
+            if(CheckDbConnection())
             {
-                throw new InvalidOperationException("Database connection has not been opened.");
+                return _connectionString;
             }
 
-            return _dbConnection;
+            return string.Empty;
         }
     }
-/*
-    /// <summary>
-    /// Initializes the database by creating the necessary tables and inserting the initial data.
-    /// </summary>
-    public static void Initialize()
+
+
+    public static bool CheckDbConnection()
     {
-        if (IsDatabaseSetup())
-        {
-            return;
-        }
         try
         {
-            _dbConnection = new NpgsqlConnection(ConnectionString);
-            _dbConnection.Open();
-            string filePath = "../../../../DataAccess/Db/sql/init.sql";
-            var sql = File.ReadAllText(filePath);
-            var cmd = new NpgsqlCommand(sql, _dbConnection);
-            cmd.ExecuteNonQuery();
-            _dbConnection.Close();
+            using var conn = new NpgsqlConnection(_connectionString);
+            {
+                conn.Open();
+                return conn.State == ConnectionState.Open;
+            }
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Log.Error($"An error occured while setting up database", e);
+            return false;
         }
-        Log.Info("Database setup complete");
-    } 
-*/
+    }
+
+    /*
+        /// <summary>
+        /// Initializes the database by creating the necessary tables and inserting the initial data.
+        /// </summary>
+        public static void Initialize()
+        {
+            if (IsDatabaseSetup())
+            {
+                return;
+            }
+            try
+            {
+                _dbConnection = new NpgsqlConnection(ConnectionString);
+                _dbConnection.Open();
+                string filePath = "../../../../DataAccess/Db/sql/init.sql";
+                var sql = File.ReadAllText(filePath);
+                var cmd = new NpgsqlCommand(sql, _dbConnection);
+                cmd.ExecuteNonQuery();
+                _dbConnection.Close();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"An error occured while setting up database", e);
+            }
+            Log.Info("Database setup complete");
+        } 
+    */
 }

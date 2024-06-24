@@ -9,28 +9,57 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Windows;
 using TourPlanner.Views;
 using TourPlanner.Mapper;
+using Microsoft.Win32;
+using System.Globalization;
+using System.Net;
+using System.IO;
+using System.Configuration;
+using TourPlanner.Exceptions;
+using log4net;
+using System.Reflection;
 
 
 namespace TourPlanner.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private TourListControlViewModel _tourListControlViewModel;
+        private readonly TourListControlViewModel _tourListControlViewModel;
+        private readonly TourLogListControlViewModel _tourLogListControlViewModel;
 
-        private readonly ITourRepository _tourRepository; //weg
+        private readonly ITourRepository _tourRepository;
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MainViewModel()
         {
-            _tourRepository = TourRepository.Instance;            //weg 
+            _tourRepository = TourRepository.Instance;            
             _tourListControlViewModel = TourListControlViewModel.Instance;
             _tourListControlViewModel.NowExpandedTour += TourList_NowExpandedTour;
+            _tourLogListControlViewModel = TourLogListControlViewModel.Instance;
+            _tourLogListControlViewModel.LogsChanged += LogList_LogsChanged;
 
-            AddLogCommand = new RelayCommand(AddLog);
-            EditLogCommand = new RelayCommand(EditLog);
-            DeleteLogCommand = new RelayCommand(DeleteLog);
+            _summarizeReportCommand = new RelayCommand(SummarizeReport);
+            _importTourCommand = new RelayCommand(ImportTour);
         }
 
-        private void TourList_NowExpandedTour(object sender, EventArgs e)
+
+        private TourViewModel? _expandedTour = null;
+        public TourViewModel? ExpandedTour
+        {
+            get { return _expandedTour; }
+            set
+            {
+                _expandedTour = value;
+                OnPropertyChanged(nameof(ExpandedTour));
+            }
+        }
+
+        private void LogList_LogsChanged(object? sender, EventArgs e)
+        {
+            _tourListControlViewModel.LoadToursCommand.Execute(null);
+        }
+
+
+        private void TourList_NowExpandedTour(object? sender, EventArgs e)
         {
             if(sender is TourViewModel tourViewModel)
             {
@@ -40,192 +69,70 @@ namespace TourPlanner.ViewModels
             {
                 ExpandedTour = null;
             }
+
+            _tourLogListControlViewModel.ChangeTourCommand.Execute(ExpandedTour);
         }
 
-        private async void DeleteLog(object obj)
-        {
-            if (obj is TourLogViewModel tourLogViewModel)
-             await _tourRepository.DeleteTourLogByIdAsync(tourLogViewModel.Id);
-            _expandedTour.LoadLogs();
-            MessageBox.Show($"Tour log successfully deleted");
-        }
 
-        private void EditLog(object obj)
+        //////////////////////// Summary Report ///////////////////////////////////////////
+        private async void SummarizeReport(object obj)
         {
-            
-            LogWindow logWindow = new LogWindow();
-            
-            if (obj is TourLogViewModel tourLogViewModel)
-                logWindow.DataContext = new TourLogViewModel(tourLogViewModel.TourLog);
-            logWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            
-            if (logWindow.ShowDialog() == true)
+            try
             {
-                TourLogViewModel submittedData = logWindow.DataContext as TourLogViewModel;
-                if (submittedData != null)
+                await _tourRepository.GenerateSummarizeReportAsync();
+
+                MessageBox.Show($"Summarize Report successfully created");
+            }
+            catch (DALException)
+            {
+                MessageBox.Show($"Error occured during calculating the Summarize Report");
+            }
+            catch (UtilsException)
+            {
+                MessageBox.Show($"Summarize Report could not be generated");
+            }
+        }
+
+
+        //////////////////////// Import Tour ///////////////////////////////////////////
+        private async void ImportTour(object obj)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new()
                 {
-                    // Now you can use submittedData to save or process further
-                    UpdateTourLog(submittedData);
-                    MessageBox.Show($"Changes to the tour log have been successfully applied");
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
+                };
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    string filePath = openFileDialog.FileName;
+
+                    (TourPlanner.Models.TransportType transportType, double[] start, double[] end) = await _tourRepository.ImportTourAsync(filePath);
+
+                    await MapCreator.DownloadMapFromApi(transportType, start, end);
+
+                    _tourListControlViewModel.LoadToursCommand.Execute(null);
+                    MessageBox.Show($"Tour successfully created by Import");
                 }
             }
-            logWindow.DataContext = null;
-        }
-
-        private async void UpdateTourLog(TourLogViewModel submittedData)
-        {
-            var tourLogEntity = new TourLogEntity
+            catch (DALException)
             {
-                Id = submittedData.Id,
-                TourId = _expandedTour.Id,
-                Distance = submittedData.TourLog.Distance,
-                TotalTime = submittedData.TourLog.TotalTime,
-                Rating = submittedData.TourLog.Rating,
-                Comment  = submittedData.TourLog.Comment,
-                Difficulty = submittedData.TourLog.Difficulty,
-                TourDate = submittedData.TourLog.TourDate,
-                
-                
-            };
-            await _tourRepository.UpdateTourLogAsync(tourLogEntity);
-           
-            _expandedTour.ClearLogs();
-            _expandedTour.LoadLogs();
-        }
-
-        private void AddLog(object obj)
-        {
-            LogWindow logWindow = new LogWindow();
-            logWindow.DataContext = new TourLogViewModel(new TourLogModel());
-            logWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            
-            if (logWindow.ShowDialog() == true)
+                MessageBox.Show($"Tour from Import could not be saved");
+            }
+            catch (UtilsException)
             {
-                TourLogViewModel submittedData = logWindow.DataContext as TourLogViewModel;
-                if (submittedData != null)
-                {
-                    // Now you can use submittedData to save or process further
-                    SaveTourLog(submittedData);                   
-                }
+                MessageBox.Show($"Map of Tour could not be downloaded");  // delete created tour ?
+            }
+            catch (Exception ex)
+            {
+                log.Error("Import failed", ex);
+                MessageBox.Show($"Import failed");
             }
         }
 
-        private async void SaveTourLog(TourLogViewModel submittedData)
-        {
-            var tourLogEntity = new TourLogEntity
-            {
-                TourId = _expandedTour.Id,
-                Distance = submittedData.TourLog.Distance,
-                TotalTime = submittedData.TourLog.TotalTime,
-                Rating = submittedData.TourLog.Rating,
-                Comment  = submittedData.TourLog.Comment,
-                Difficulty = submittedData.TourLog.Difficulty,
-                TourDate = submittedData.TourLog.TourDate,
-                
+   
 
-            };
-            await _tourRepository.CreateTourLogAsync(tourLogEntity);
-            
-            _expandedTour.LoadLogs();
-        }
-        
-        private ICommand _editLogCommand;
-
-        public ICommand EditLogCommand
-        {
-            get { return _editLogCommand; }
-            set
-            {
-                _editLogCommand = value;
-                OnPropertyChanged(nameof(EditLogCommand));
-            }
-        }
-
-        private ICommand _deleteLogCommand;
-
-        public ICommand DeleteLogCommand
-        {
-            get { return _deleteLogCommand; }
-            set
-            {
-                _deleteLogCommand = value;
-                OnPropertyChanged(nameof(DeleteLogCommand));
-            }
-        }
-
-        private ICommand _addLogCommand;
-
-        public ICommand AddLogCommand
-        {
-            get { return _addLogCommand; }
-            set
-            {
-                _addLogCommand = value;
-                OnPropertyChanged(nameof(AddLogCommand));
-            }
-        }
-
-        private TourViewModel? _expandedTour = null;
-        public TourViewModel ExpandedTour
-        {
-            get 
-            { 
-                return _expandedTour; 
-            }
-            set 
-            {
-                /*if (_expandedTour != null) {
-                    _expandedTour.PropertyChanged -= TourViewModel_PropertyChanged; // Unsubscribe from the previously expanded tour
-                    //_expandedTour.ClearLogs();
-                }*/
-                _expandedTour = value;
-                OnPropertyChanged(nameof(ExpandedTour));
-                /*if (_expandedTour != null) {
-                    _expandedTour.PropertyChanged += TourViewModel_PropertyChanged; // Subscribe to the newly expanded tour
-                    //_expandedTour.LoadLogs();
-                }*/               
-            }
-        }
-
-
-        /*private TourViewModel? _formTour;
-         
-        public TourViewModel FormTour
-        {
-            get
-            {
-                return _formTour;
-            }
-            set
-            {
-               if (_formTour != value)
-                {
-                    // if (_formTour != null) { _formTour.ErrorsChanged -= FormTour_ErrorsChanged; }
-                    _formTour = value;
-                    // if (_formTour != null) { _formTour.ErrorsChanged += FormTour_ErrorsChanged; }
-                    OnPropertyChanged(nameof(FormTour));
-                }
-            }
-        }*/     
-             
-
-        private TourLogViewModel? _formTourLog = new TourLogViewModel(new TourLogModel());
-
-        public TourLogViewModel FormTourLog
-        {
-            get { return _formTourLog; }
-            set
-            {
-                if (_formTourLog != value)
-                {
-                    // if (_formTour != null) { _formTour.ErrorsChanged -= FormTour_ErrorsChanged; }
-                    _formTourLog = value;
-                    // if (_formTour != null) { _formTour.ErrorsChanged += FormTour_ErrorsChanged; }
-                    OnPropertyChanged(nameof(FormTourLog));
-                }
-            }
-        }
-
+        //////////////////////// Commands / Events ///////////////////////////////////////////
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -233,5 +140,31 @@ namespace TourPlanner.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
+        private ICommand _summarizeReportCommand;
+
+        public ICommand SummarizeReportCommand
+        {
+            get { return _summarizeReportCommand; }
+            set
+            {
+                _summarizeReportCommand = value;
+                OnPropertyChanged(nameof(SummarizeReportCommand));
+            }
+        }
+
+        private ICommand _importTourCommand;
+        public ICommand ImportTourCommand
+        {
+            get { return _importTourCommand; }
+            set
+            {
+                _importTourCommand = value;
+                OnPropertyChanged(nameof(ImportTourCommand));
+            }
+        }
+
+        //////////////////////// Commands / Events ///////////////////////////////////////////
     }
 }

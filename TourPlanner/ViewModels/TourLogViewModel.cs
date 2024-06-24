@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,9 +7,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using TourPlanner.Exceptions;
 using TourPlanner.Models;
 using TourPlanner.Persistence.Repository;
 using TourPlanner.Persistence.Utils;
@@ -19,21 +23,21 @@ namespace TourPlanner.ViewModels
 {
     public class TourLogViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
     {
-        private TourLogModel _tourLog;
+        private readonly TourLogModel _tourLog;
 
         public TourLogModel TourLog
         {
             get { return _tourLog; }
         }
 
-        private readonly TourRepository _tourRepository;
 
-        private Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
+        private readonly Dictionary<string, List<string>>  _errors = new ();
+
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public TourLogViewModel(TourLogModel tourLog)
         {
             _tourLog = tourLog;
-            _tourRepository = TourRepository.Instance;
         }
 
         
@@ -48,7 +52,13 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        private string _tourDateString;
+        public int TourId
+        {
+            get { return _tourLog.TourId; }
+        }
+
+
+        private string? _tourDateString;
         public string TourDate
         {
             get
@@ -62,15 +72,26 @@ namespace TourPlanner.ViewModels
             set
             {
                 _tourDateString = value;
-                DateOnly? dateOnly = Helper.ExtractAndConvertDatePart(value);
-                
-                if (dateOnly.HasValue)
+                try
                 {
-                    _tourLog.TourDate = (dateOnly.Value);
-                    ValidateProperty(nameof(TourDate));
-                    OnPropertyChanged(nameof(TourDate));
+                    DateOnly? dateOnly = Helper.ExtractAndConvertDatePart(value);
+
+                    if (dateOnly.HasValue)
+                    {
+                        _tourLog.TourDate = (dateOnly.Value);
+                        ValidateProperty(nameof(TourDate));
+                        OnPropertyChanged(nameof(TourDate));
+                    }
+                    else { AddError(nameof(TourDate), "Invalid Date"); }
                 }
-                else { AddError(nameof(TourDate), "Invalid Date"); }
+                catch (UtilsException)
+                {
+                    MessageBox.Show($"Tour Date could not be extacted");
+                }
+                catch (Exception ex)
+                {
+                    log.Error($"Error Convert Date: {ex}");
+                }
             }
         }
 
@@ -111,7 +132,7 @@ namespace TourPlanner.ViewModels
         }
 
         private string _distanceString = string.Empty;
-        public string? Distance
+        public string Distance
         {
             get
             {
@@ -199,42 +220,44 @@ namespace TourPlanner.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
 
         protected virtual void OnErrorsChanged(string propertyName)
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
 
-        public IEnumerable GetErrors(string propertyName)
+        public IEnumerable GetErrors(string? propertyName)
         {
-            if (!string.IsNullOrEmpty(propertyName) && _errors.ContainsKey(propertyName))
+            if (!string.IsNullOrEmpty(propertyName) && _errors.TryGetValue(propertyName, out List<string>? value))
             {
-                yield return _errors[propertyName];
+                yield return value;
             }
             yield break;
         }
 
         private void AddError(string propertyName, string error)
         {
-            if (!_errors.ContainsKey(propertyName))
+            if (!_errors.TryGetValue(propertyName, out List<string>? value))
             {
-                _errors[propertyName] = new List<string>();
+                value = new List<string>();
+                _errors[propertyName] = value;
             }
-            if (!_errors[propertyName].Contains(error))
+            if (!value.Contains(error))
             {
-                _errors[propertyName].Add(error);
+                value.Add(error);
                 OnErrorsChanged(propertyName);
             }
         }
 
         private void RemoveError(string propertyName)
         {
-            if (_errors.ContainsKey(propertyName))
+            if (!_errors.ContainsKey(propertyName))
             {
-                _errors.Remove(propertyName);
-                OnErrorsChanged(propertyName);
+                return;
             }
+            _errors.Remove(propertyName);
+            OnErrorsChanged(propertyName);
         }
 
         public bool HasErrors => _errors.Count > 0;
@@ -286,7 +309,14 @@ namespace TourPlanner.ViewModels
             }
             else if (propertyName == "Distance")
             {
-                RemoveError(nameof(Distance));
+                if (string.IsNullOrEmpty(Distance))
+                {
+                    AddError(nameof(Distance), "Distance can not be empty");
+                }
+                else
+                {
+                    RemoveError(nameof(Distance)); 
+                }
             }
             else if (propertyName == "TotalTime")
             {

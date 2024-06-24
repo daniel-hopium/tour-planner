@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,7 +23,7 @@ namespace TourPlanner.Views
     /// </summary>
     public partial class TourFormControl : UserControl
     {
-        private TourViewModel _formTourViewModel {  get; set; }
+        private readonly TourViewModel _formTourViewModel; // {  get; set; }
 
         public TourFormControl()
         {
@@ -33,34 +34,37 @@ namespace TourPlanner.Views
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var textBox = sender as TextBox;
-            if (textBox != null)
+            try
             {
-                // Verwenden Sie Dispatcher.BeginInvoke, um sicherzustellen, dass die UI aktualisiert wird
-                textBox.Dispatcher.BeginInvoke(new Action(() =>
+                var textBox = sender as TextBox;
+                if (textBox != null)
                 {
-                    // Aktualisieren Sie die Validierungsnachricht
-                    var binding = textBox.GetBindingExpression(TextBox.TextProperty);
-                    if (binding != null)
+                    // Dispatcher.BeginInvoke to automaticly reload UI
+                    textBox.Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        // Zugriff auf das Target-Element des Bindings (normalerweise das TextBox-Steuerelement)
-                        var targetElement = binding.Target as FrameworkElement;
-
-                        if (targetElement != null)
+                        // refresh validation
+                        var binding = textBox.GetBindingExpression(TextBox.TextProperty);
+                        if (binding != null)
                         {
-                            // Finden Sie das erste TextBlock-Element als Kind des Target-Elements
-                            var textBlock = XamlHelper.FindFirstVisualChild<TextBlock>(targetElement);
+                            // TextBox/Target-element
+                            var targetElement = binding.Target as FrameworkElement;
 
-                            if (textBlock != null)
+                            if (targetElement != null)
                             {
-                                // Aktualisieren Sie die Validierungsnachricht des gefundenen TextBlocks
-                                var textBindingExpression = textBlock.GetBindingExpression(TextBlock.TextProperty);
-                                textBindingExpression?.UpdateTarget();
+                                var textBlock = XamlHelper.FindFirstVisualChild<TextBlock>(targetElement);
+
+                                if (textBlock != null)
+                                {
+                                    // refresh validation of TextBlocks
+                                    var textBindingExpression = textBlock.GetBindingExpression(TextBlock.TextProperty);
+                                    textBindingExpression?.UpdateTarget();
+                                }
                             }
                         }
-                    }
-                }));
+                    }));
+                }
             }
+            catch (Exception) { }
         }
 
     }

@@ -19,14 +19,14 @@ CREATE TABLE IF NOT EXISTS tours (
     est_time            INT             NOT NULL,
     image               VARCHAR(255)    NOT NULL,
     popularity          INT             NOT NULL DEFAULT 0,
-    child_friendliness  INT             NOT NULL DEFAULT 0,
+    child_friendliness  INT,
     created             TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tourlogs (
     id                  SERIAL          PRIMARY KEY,
     tour_date           DATE            NOT NULL,
-    comment             VARCHAR(255),
+    comment             VARCHAR(255)    NOT NULL,
     tour_id_fk          INT             NOT NULL    references tours(id) ON DELETE CASCADE,
     difficulty          INT             NOT NULL,
     distance            FLOAT           NOT NULL,
@@ -44,8 +44,8 @@ VALUES ('Austria', 'Höchstädtplatz', '6', 1200, 'Wien', NOW()),
 
 -- F�gen Sie Daten in die Tour-Tabelle ein
 INSERT INTO tours (name, description, from_address_fk, to_address_fk, transport_type, distance, est_time, image, popularity, child_friendliness, created)
-VALUES ('Tour 1', 'Description for Tour 1', 1, 3, 'car', 300, 182, '/Persistence/Images/map_car_16,378317_48,238992_12,995288_47,82287.png', 1, 5, NOW()),
-       ('Tour 2', 'Description for Tour 2', 1, 2, 'running', 2.2, 26, '/Persistence/Images/map_running_16,378317_48,238992_16,377598_48,244099.png', 1, 3, NOW());
+VALUES ('Tour 1', 'Description for Tour 1', 1, 3, 'car', 300, 182, 'car_16,378317_48,238992_12,995288_47,82287.png', 1, 5, NOW()),
+       ('Tour 2', 'Description for Tour 2', 1, 2, 'running', 2.2, 26, 'running_16,378317_48,238992_16,377598_48,244099.png', 1, 3, NOW());
 
 -- Insert data into the tourlogs table
 INSERT INTO tourlogs (tour_date, comment, tour_id_fk, difficulty, distance, total_time, rating, created)

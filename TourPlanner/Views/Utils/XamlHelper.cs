@@ -11,7 +11,7 @@ namespace TourPlanner.Views.Utils
     public static class XamlHelper
     {
         // search recursive for the parent-XAML-element of type T
-        public static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
+        public static T? FindVisualParent<T>(DependencyObject child) where T : DependencyObject
         {
             DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
@@ -30,7 +30,7 @@ namespace TourPlanner.Views.Utils
             }
         }
 
-        public static T FindFirstVisualChild<T>(DependencyObject dependencyObject) where T : DependencyObject
+        public static T? FindFirstVisualChild<T>(DependencyObject dependencyObject) where T : DependencyObject
         {
             if (dependencyObject != null)
             {
