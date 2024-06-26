@@ -19,7 +19,7 @@ using System.Net;
 using System.Reflection;
 using NUnit.Framework.Interfaces;
 
-namespace TestRourPlanner.ViewModels
+namespace TestTourPlanner.ViewModels
 {
     public class TestMainViewModel
     {

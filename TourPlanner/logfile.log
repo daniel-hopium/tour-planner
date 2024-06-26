@@ -470,3 +470,209 @@
 2024-06-23 22:19:50,318 [1] INFO  TourPlanner.App - Application started.
 2024-06-23 22:25:33,757 [1] INFO  TourPlanner.App - Application started.
 
+2024-06-26 17:52:19,599 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 18:21:43,546 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 18:22:03,555 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 18:27:27,621 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 18:30:09,296 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 18:31:49,237 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:31:59,844 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:32:10,111 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:33:06,552 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:33:12,743 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:34:07,479 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:34:31,882 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:34:49,320 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 18:35:29,542 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 18:48:48,577 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 18:49:02,232 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 18:49:24,128 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 19:05:57,265 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 19:09:50,296 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 19:10:38,914 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 20:01:05,736 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:04:17,725 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 20:24:03,426 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:24:10,540 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 20:25:31,589 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:31:03,424 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:33:05,901 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:37:37,246 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 20:39:10,359 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:40:12,483 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:40:22,773 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 20:40:52,763 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:41:00,239 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 20:41:45,430 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:49:36,661 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:50:09,337 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 20:50:32,753 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 20:50:33,717 [1] ERROR TourPlanner.ViewModels.Utils.MapCreator - Error during Map-Image genration: System.ArgumentException: Parameter is not valid.
+   at System.Drawing.SafeNativeMethods.Gdip.CheckStatus(Int32 status)
+   at System.Drawing.Bitmap..ctor(String filename, Boolean useIcm)
+   at System.Drawing.Bitmap..ctor(String filename)
+   at TourPlanner.ViewModels.Utils.MapCreator.LoadMarkerIcon(Marker marker) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 254
+   at TourPlanner.ViewModels.Utils.MapCreator.GenerateImageAsync(Double[][] coordinates, Double[] bbox, Double[] coordinatesStart, Double[] coordinatesEnd) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\MapCreator.cs:line 219
+2024-06-26 20:52:02,029 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:52:04,230 [1] ERROR TourPlanner.ViewModels.TourViewModel - Map could not be loaded: System.IO.FileNotFoundException: Could not find file 'C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\Persistence\Imagesrunning_16,378317_48,238992_16,377598_48,244099.png'.
+File name: 'C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\Persistence\Imagesrunning_16,378317_48,238992_16,377598_48,244099.png'
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at System.Windows.Media.Imaging.BitmapDecoder.SetupDecoderFromUriOrStream(Uri uri, Stream stream, BitmapCacheOption cacheOption, Guid& clsId, Boolean& isOriginalWritable, Stream& uriStream, UnmanagedMemoryStream& unmanagedMemoryStream, SafeFileHandle& safeFilehandle)
+   at System.Windows.Media.Imaging.BitmapDecoder.CreateFromUriOrStream(Uri baseUri, Uri uri, Stream stream, BitmapCreateOptions createOptions, BitmapCacheOption cacheOption, RequestCachePolicy uriCachePolicy, Boolean insertInDecoderCache)
+   at System.Windows.Media.Imaging.BitmapImage.FinalizeCreation()
+   at TourPlanner.ViewModels.TourViewModel.LoadMap(Object obj) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\TourViewModel.cs:line 335
+2024-06-26 20:52:30,051 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:54:02,831 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 20:54:05,002 [1] ERROR TourPlanner.ViewModels.TourViewModel - Map could not be loaded: System.NotSupportedException: The URI prefix is not recognized.
+   at System.Net.WebRequest.Create(Uri requestUri, Boolean useUriBase)
+   at MS.Internal.WpfWebRequestHelper.CreateRequest(Uri uri)
+   at System.IO.Packaging.PackWebRequest.GetRequest(Boolean allowPseudoRequest)
+   at System.IO.Packaging.PackWebRequest.GetResponse()
+   at MS.Internal.WpfWebRequestHelper.GetResponse(WebRequest request)
+   at System.Windows.Media.Imaging.BitmapDecoder.SetupDecoderFromUriOrStream(Uri uri, Stream stream, BitmapCacheOption cacheOption, Guid& clsId, Boolean& isOriginalWritable, Stream& uriStream, UnmanagedMemoryStream& unmanagedMemoryStream, SafeFileHandle& safeFilehandle)
+   at System.Windows.Media.Imaging.BitmapDecoder.CreateFromUriOrStream(Uri baseUri, Uri uri, Stream stream, BitmapCreateOptions createOptions, BitmapCacheOption cacheOption, RequestCachePolicy uriCachePolicy, Boolean insertInDecoderCache)
+   at System.Windows.Media.Imaging.BitmapImage.FinalizeCreation()
+   at TourPlanner.ViewModels.TourViewModel.LoadMap(Object obj) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\TourViewModel.cs:line 335
+2024-06-26 20:54:23,547 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:05:47,331 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:06:12,026 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:06:20,435 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 21:06:31,009 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:07:10,234 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:07:41,148 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:08:01,835 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:08:16,487 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 21:08:37,180 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:09:23,934 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:09:37,932 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 21:10:39,601 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:11:11,604 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:22:36,169 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:23:44,628 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:23:50,460 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 21:26:10,116 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:27:05,016 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:34:25,306 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:34:41,670 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 21:35:07,064 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:36:57,875 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:37:26,458 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 21:37:48,109 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:40:18,220 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:42:10,838 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:43:26,313 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:43:50,414 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:44:22,609 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:44:59,730 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:45:23,562 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 21:51:37,052 [1] ERROR TourPlanner.ViewModels.Utils.OpenRouteService - Could not GetDirectionsFromApi: System.Net.Http.HttpRequestException: Response status code does not indicate success: 400 (Bad Request).
+   at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at TourPlanner.ViewModels.Utils.OpenRouteService.GetDirectionsFromApi(TransportType transportType, String start, String end) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\OpenRouteService.cs:line 135
+2024-06-26 21:52:32,953 [1] ERROR TourPlanner.ViewModels.Utils.OpenRouteService - Could not GetDirectionsFromApi: System.Net.Http.HttpRequestException: Response status code does not indicate success: 400 (Bad Request).
+   at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at TourPlanner.ViewModels.Utils.OpenRouteService.GetDirectionsFromApi(TransportType transportType, String start, String end) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\OpenRouteService.cs:line 135
+2024-06-26 21:52:39,788 [1] ERROR TourPlanner.ViewModels.Utils.OpenRouteService - Could not GetDirectionsFromApi: System.Net.Http.HttpRequestException: Response status code does not indicate success: 400 (Bad Request).
+   at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at TourPlanner.ViewModels.Utils.OpenRouteService.GetDirectionsFromApi(TransportType transportType, String start, String end) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\OpenRouteService.cs:line 135
+2024-06-26 21:52:43,734 [1] ERROR TourPlanner.ViewModels.Utils.OpenRouteService - Could not GetDirectionsFromApi: System.Net.Http.HttpRequestException: Response status code does not indicate success: 400 (Bad Request).
+   at System.Net.Http.HttpResponseMessage.EnsureSuccessStatusCode()
+   at TourPlanner.ViewModels.Utils.OpenRouteService.GetDirectionsFromApi(TransportType transportType, String start, String end) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\OpenRouteService.cs:line 135
+2024-06-26 22:01:27,689 [1] ERROR TourPlanner.ViewModels.Utils.OpenRouteService - Could not GetParametersFromApi: Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot perform runtime binding on a null reference
+   at CallSite.Target(Closure, CallSite, Object)
+   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
+   at CallSite.Target(Closure, CallSite, Object)
+   at TourPlanner.ViewModels.Utils.OpenRouteService.GetParametersFromApi(String text) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\Utils\OpenRouteService.cs:line 58
+2024-06-26 22:13:39,881 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:14:22,540 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:15:34,594 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:17:07,736 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:17:45,622 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 22:18:57,883 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:21:37,943 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:22:45,996 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 22:30:01,072 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:30:06,938 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 22:31:29,607 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 22:35:33,317 [1] INFO  TourPlanner.App - Application exited.
+2024-06-26 23:36:33,889 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 23:36:36,232 [1] ERROR TourPlanner.ViewModels.TourViewModel - Map could not be loaded: System.UriFormatException: Invalid URI: The format of the URI could not be determined.
+   at System.Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+   at System.Uri..ctor(String uriString)
+   at TourPlanner.ViewModels.TourViewModel.LoadMap(Object obj) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\TourViewModel.cs:line 335
+2024-06-26 23:40:19,654 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 23:40:21,846 [1] ERROR TourPlanner.ViewModels.TourViewModel - Map could not be loaded: System.UriFormatException: Invalid URI: The format of the URI could not be determined.
+   at System.Uri.CreateThis(String uri, Boolean dontEscape, UriKind uriKind, UriCreationOptions& creationOptions)
+   at System.Uri..ctor(String uriString)
+   at TourPlanner.ViewModels.TourViewModel.LoadMap(Object obj) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\TourViewModel.cs:line 335
+2024-06-26 23:44:48,160 [1] INFO  TourPlanner.App - Application started.
+2024-06-26 23:44:50,381 [1] INFO  TourPlanner.ViewModels.TourViewModel - Attempting to load map with URI: file:///C:/Users/danie/Documents/Repositories/tour-planner/TourPlanner/bin/Debug/net7.0-windows/Persistence/Images/running_16,378317_48,238992_16,377598_48,244099.png
+2024-06-26 23:44:50,403 [1] ERROR TourPlanner.ViewModels.TourViewModel - Map could not be loaded: System.IO.FileNotFoundException: Could not find file 'C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\bin\Debug\net7.0-windows\Persistence\Images\running_16,378317_48,238992_16,377598_48,244099.png'.
+File name: 'C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\bin\Debug\net7.0-windows\Persistence\Images\running_16,378317_48,238992_16,377598_48,244099.png'
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+   at System.Windows.Media.Imaging.BitmapDecoder.SetupDecoderFromUriOrStream(Uri uri, Stream stream, BitmapCacheOption cacheOption, Guid& clsId, Boolean& isOriginalWritable, Stream& uriStream, UnmanagedMemoryStream& unmanagedMemoryStream, SafeFileHandle& safeFilehandle)
+   at System.Windows.Media.Imaging.BitmapDecoder.CreateFromUriOrStream(Uri baseUri, Uri uri, Stream stream, BitmapCreateOptions createOptions, BitmapCacheOption cacheOption, RequestCachePolicy uriCachePolicy, Boolean insertInDecoderCache)
+   at System.Windows.Media.Imaging.BitmapImage.FinalizeCreation()
+   at TourPlanner.ViewModels.TourViewModel.LoadMap(Object obj) in C:\Users\danie\Documents\Repositories\tour-planner\TourPlanner\ViewModels\TourViewModel.cs:line 343

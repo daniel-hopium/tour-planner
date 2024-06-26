@@ -32,7 +32,8 @@ namespace TourPlanner.ViewModels
         private readonly IFileDialogService _fileDialogService;
         private readonly IMessageBoxService _messageBoxService;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        public WeatherViewModel WeatherViewModel { get; set; }
+        
         public MainViewModel()
         {
             _tourRepository = TourRepository.Instance;
@@ -47,6 +48,7 @@ namespace TourPlanner.ViewModels
 
             _summarizeReportCommand = new RelayCommand(SummarizeReport);
             _importTourCommand = new RelayCommand(ImportTour);
+            WeatherViewModel = new WeatherViewModel();
         }
 
         public MainViewModel(

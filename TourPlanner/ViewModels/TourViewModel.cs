@@ -30,7 +30,9 @@ using System.Configuration;
 using log4net;
 using TourPlanner.Exceptions;
 using System.Reflection;
+using TourPlanner.Config;
 using TourPlanner.UtilsForUnittests;
+using Path = iText.Kernel.Geom.Path;
 
 namespace TourPlanner.ViewModels
 {
@@ -332,7 +334,15 @@ namespace TourPlanner.ViewModels
         {
             try
             {
-                Map = new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagesDirectory"] + $"{Image}"));
+                string imagesDirectory = ConfigurationHelper.ImagesDirectory;
+                string imagePath = imagesDirectory + $"{Image}";
+                string uriString = new Uri(imagePath).AbsoluteUri;
+
+                log.Info($"Attempting to load map with URI: {uriString}");
+        
+                Map = new BitmapImage(new Uri(uriString));
+                
+               // Map = new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagesDirectory"] + $"{Image}"));
             }
             catch (Exception ex)
             {

@@ -1,0 +1,12 @@
+﻿<Window x:Class="TourPlanner.Views.CitySelectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Select City" Height="200" Width="400">
+    <Grid>
+        <StackPanel Margin="20">
+            <TextBlock Text="Enter City Name:" FontSize="16"/>
+            <TextBox x:Name="CityNameTextBox" Margin="0,10"/>
+            <Button Content="OK" Click="OkButton_Click" Width="100" HorizontalAlignment="Right"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="TourPlanner.Views.WeatherUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="50" d:DesignWidth="500">
+    <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="10" Background="LightBlue">
+        <StackPanel Orientation="Horizontal">
+            <!-- Weather Icon -->
+            <Image Width="40" Height="40" Margin="10,0" VerticalAlignment="Center" Source="{Binding WeatherIconSource}" />
+
+            <!-- Weather Information -->
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MouseLeftButtonUp="WeatherInfo_Click">
+                <TextBlock FontSize="24" FontWeight="Bold" Text="{Binding WeatherTemperature}" Margin="10,0" VerticalAlignment="Center"/>
+                <TextBlock FontSize="16" Text="{Binding WeatherCondition}" Margin="10, 0, 0, 0" VerticalAlignment="Center"/>
+                <TextBlock FontSize="16" Text=" in "  VerticalAlignment="Center"/>
+                <TextBlock FontSize="16" Text="{Binding SelectedCity}"  VerticalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

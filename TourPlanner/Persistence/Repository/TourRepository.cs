@@ -190,7 +190,7 @@ public class TourRepository : ITourRepository
             _dbContext.TourLogs.Add(tourLog);
             await _dbContext.SaveChangesAsync();
             await CalculatePopularity(tourLog.TourId);
-            await CalculateCildfriendly(tourLog.TourId);
+            await CalculateChildfriendly(tourLog.TourId);
         }
         catch (Exception ex)
         {
@@ -208,7 +208,7 @@ public class TourRepository : ITourRepository
                 _dbContext.TourLogs.Remove(tourLog);
                 await _dbContext.SaveChangesAsync();
                 await CalculatePopularity(tourLog.TourId);
-                await CalculateCildfriendly(tourLog.TourId);
+                await CalculateChildfriendly(tourLog.TourId);
                 return true;
             }
 
@@ -230,7 +230,7 @@ public class TourRepository : ITourRepository
                 // Assuming your context is tracking changes, you only need to copy the updated values
                 _dbContext.Entry(tourLog).CurrentValues.SetValues(updatedTourLog);
                 await _dbContext.SaveChangesAsync();
-                await CalculateCildfriendly(tourLog.TourId);
+                await CalculateChildfriendly(tourLog.TourId);
                 return true;
             }
 
@@ -273,7 +273,7 @@ public class TourRepository : ITourRepository
         }
     }
 
-    private async Task CalculateCildfriendly(int tourId)  // bis 8 -> 5; ab 8 -> 4; ab 16 -> 3; ab 20 -> 2, ab 24 -> 1, ab 28 -> 0
+    private async Task CalculateChildfriendly(int tourId)  // bis 8 -> 5; ab 8 -> 4; ab 16 -> 3; ab 20 -> 2, ab 24 -> 1, ab 28 -> 0
     {
         try
         {

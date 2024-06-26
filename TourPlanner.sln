@@ -5,7 +5,7 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TourPlanner", "TourPlanner\TourPlanner.csproj", "{2A80EEC7-1CE3-4B0F-A578-CB17FE945F6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRourPlanner", "TestRourPlanner\TestRourPlanner.csproj", "{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTourPlanner", "TestTourPlanner\TestTourPlanner.csproj", "{A344B9BF-C6F4-431C-94A5-9EC81793AF3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

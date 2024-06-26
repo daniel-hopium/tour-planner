@@ -135,6 +135,11 @@ namespace TourPlanner.Views
             helpWindow.Owner = this;
             helpWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             helpWindow.ShowDialog(); // This shows the Help window as a modal dialog
-        }      
+        }
+
+        private void WeatherUserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

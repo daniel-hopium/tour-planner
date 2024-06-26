@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestRourPlanner.ViewModels
+namespace TestTourPlanner.ViewModels
 {
     internal class TestTourLogListControlViewModel
     {

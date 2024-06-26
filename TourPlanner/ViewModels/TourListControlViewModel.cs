@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -78,8 +79,60 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(Tours));
             }
         }
+        
+        private ObservableCollection<TourViewModel> _filteredTours = new();
+        public ObservableCollection<TourViewModel> FilteredTours
+        {
+            get => _filteredTours;
+            set
+            {
+                _filteredTours = value;
+                OnPropertyChanged(nameof(FilteredTours));
+            }
+        }
+        
+        private string _searchText = "";
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    OnPropertyChanged(nameof(SearchText));
+                    PerformSearch();
+                }
+            }
+        }
 
+        internal void PerformSearch()
+        {
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                FilteredTours = new ObservableCollection<TourViewModel>(Tours);
+            }
+            else
+            {
+                var lowerSearchText = SearchText.ToLower();
+                var searchResults = Tours.Where(t => 
+                    t.Name.ToLower().Contains(lowerSearchText) ||
+                    t.Description.ToLower().Contains(lowerSearchText) ||
+                    t.FromAddress.ToLower().Contains(lowerSearchText) ||
+                    t.ToAddress.ToLower().Contains(lowerSearchText) ||
+                    t.TourLogs.Any(log => log.Comment.ToLower().Contains(lowerSearchText) || log.Rating.ToString().Contains(lowerSearchText))
+                ).ToList();
 
+                // Ranking based on popularity and child-friendliness
+                var rankedResults = searchResults
+                    .OrderByDescending(t => t.Popularity)
+                    .ThenByDescending(t => t.ChildFriendliness)
+                    .ToList();
+
+                FilteredTours = new ObservableCollection<TourViewModel>(rankedResults);
+            }
+        }
+        
         //////////////////////// Load Tours of List ///////////////////////////////////////////
 
         private void LoadTours()
@@ -94,9 +147,12 @@ namespace TourPlanner.ViewModels
                 {
                     Tours.Add(new TourViewModel(tour));
                 }
+                PerformSearch();
+                
                 if (Tours.Any())
                 {
-                    Tours.First().IsExpanded = true;
+                    //Tours.First().IsExpanded = true;
+                    FilteredTours.First().IsExpanded = true;
                 }
                 else { _messageBoxService.Show($"No Tours created yet"); }
             }

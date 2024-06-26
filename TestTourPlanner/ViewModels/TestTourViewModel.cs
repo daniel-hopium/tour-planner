@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Reflection;
 
 
-namespace TestRourPlanner.ViewModels
+namespace TestTourPlanner.ViewModels
 {
     public class TestTourViewModel
     {

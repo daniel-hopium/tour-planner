@@ -13,7 +13,7 @@ using TourPlanner.UtilsForUnittests;
 using TourPlanner.ViewModels;
 using TourPlanner.ViewModels.Utils;
 
-namespace TestRourPlanner.ViewModels
+namespace TestTourPlanner.ViewModels
 {
     [Apartment(ApartmentState.STA)] // to be able to process WPF-Componente (TreeViewItem)
     public class TestTourListControlViewModel
@@ -131,6 +131,18 @@ namespace TestRourPlanner.ViewModels
             // Assert
             Assert.That(eventRaised, Is.True);
         }
+        
+        [Test]
+        public void SearchText_Setter_ShouldTriggerPerformSearch()
+        {
+            // Arrange
+            var initialTourCount = _tourListControlViewModel.FilteredTours.Count;
 
+            // Act
+            _tourListControlViewModel.SearchText = "NonExistent";
+
+            // Assert
+            Assert.That(_tourListControlViewModel.FilteredTours.Count, Is.EqualTo(0));
+        }
     }
 }

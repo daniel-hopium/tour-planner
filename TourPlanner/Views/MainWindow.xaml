@@ -38,6 +38,8 @@
             <local:TourListControl Grid.Row="1" Margin="10,0,10,10" />
         </Grid>
 
+        
+        
         <!-- Rechter Bereich: Daten und Aktionen -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -46,8 +48,11 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            
             <!-- Button Leiste -->
             <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Margin="10">
+                <local:WeatherUserControl  Margin="20, 5" Height="50" Width="400"
+                                           DataContext="{Binding WeatherViewModel}" />
                 <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Summarize" Command="{Binding SummarizeReportCommand}" Icon="BarChart" Background="Green"/>
                 <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Import Tour" Command="{Binding ImportTourCommand}" Icon="Upload" Background="Gold"/>
                 <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Add Tour" Click="AddTour_Click" Icon="Plus" Margin="5 5 40 5"/>
