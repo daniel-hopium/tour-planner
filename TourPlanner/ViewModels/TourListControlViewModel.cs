@@ -17,15 +17,16 @@ using TourPlanner.Persistence.Utils;
 using log4net;
 using System.Reflection;
 using TourPlanner.Exceptions;
+using TourPlanner.UtilsForUnittests;
 
 namespace TourPlanner.ViewModels
 {
-    public class TourListControlViewModel : INotifyPropertyChanged
+    public class TourListControlViewModel : INotifyPropertyChanged, ITourListControlViewModel
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly TourRepository _tourRepository;
-
+        private readonly ITourRepository _tourRepository;
+        private readonly IMessageBoxService _messageBoxService;
 
         // Singleton Pattern without Dependency Injection -> all ViewModels able use same TourListControlViewModel
         private static readonly TourListControlViewModel _instance = new ();
@@ -38,6 +39,7 @@ namespace TourPlanner.ViewModels
         public TourListControlViewModel()
         {
             _tourRepository = TourRepository.Instance;
+            _messageBoxService = new MessageBoxService();
             LoadTours();
 
             _expandedCommand = new RelayCommand(ExpandTour);            
@@ -48,6 +50,21 @@ namespace TourPlanner.ViewModels
             _loadToursCommand = new RelayCommand(LoadToursFromOutside);
             _resetEditModeCommand = new RelayCommand(ResetEditModeTours);
         }
+
+        public TourListControlViewModel(ITourRepository tourRepository, IMessageBoxService messageBoxService)
+        {
+            _tourRepository = tourRepository;
+            _messageBoxService = messageBoxService;
+
+            _expandedCommand = new RelayCommand(ExpandTour);
+            _tourEditCommand = new RelayCommand(EditTour);
+            _tourReportCommand = new RelayCommand(ReportTour);
+            _exportCommand = new RelayCommand(ExportTour);
+            _tourDeleteCommand = new RelayCommand(DeleteTour);
+            _loadToursCommand = new RelayCommand(LoadToursFromOutside);
+            _resetEditModeCommand = new RelayCommand(ResetEditModeTours);
+        }
+
 
 
         private ObservableCollection<TourViewModel> _tours = new();
@@ -81,11 +98,11 @@ namespace TourPlanner.ViewModels
                 {
                     Tours.First().IsExpanded = true;
                 }
-                else { MessageBox.Show($"No Tours created yet"); }
+                else { _messageBoxService.Show($"No Tours created yet"); }
             }
             catch (DALException)
             {
-                // MessageBox.Show($"Tours could not be loaded");  // Why when closing window or loading Tours after Logchange
+                // _messageBoxService.Show($"Tours could not be loaded");  // Why when closing window or loading Tours after Logchange
             }
             catch (Exception ex)
             {
@@ -206,7 +223,7 @@ namespace TourPlanner.ViewModels
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour to edit could not be found");
+                _messageBoxService.Show($"Tour to edit could not be found");
             }
             catch (Exception ex)
             {
@@ -231,17 +248,17 @@ namespace TourPlanner.ViewModels
                     if (treeViewItem.DataContext is TourViewModel tourViewModel)
                     {
                         await _tourRepository.GenerateTourReport(tourViewModel.Id);
-                        MessageBox.Show($"Report for {tourViewModel.Name} generated successfully.");
+                        _messageBoxService.Show($"Report for {tourViewModel.Name} generated successfully.");
                     }
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Data for Tour-Report could not be processed");
+                _messageBoxService.Show($"Data for Tour-Report could not be processed");
             }
             catch (UtilsException)
             {
-                MessageBox.Show($"Tour-Report could not be generated");
+                _messageBoxService.Show($"Tour-Report could not be generated");
             }
             catch (Exception ex)
             {
@@ -258,17 +275,17 @@ namespace TourPlanner.ViewModels
                     if (treeViewItem.DataContext is TourViewModel tourViewModel)
                     {
                         await _tourRepository.GenerateTourExportAsync(tourViewModel.Id);
-                        MessageBox.Show($"Tour {tourViewModel.Name} successfully exported");
+                        _messageBoxService.Show($"Tour {tourViewModel.Name} successfully exported");
                     }
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour data for Export could not be loaded");
+                _messageBoxService.Show($"Tour data for Export could not be loaded");
             }
             catch (UtilsException)
             {
-                MessageBox.Show($"Tour-Export could not be generated");
+                _messageBoxService.Show($"Tour-Export could not be generated");
             }
             catch (Exception ex)
             {
@@ -286,13 +303,13 @@ namespace TourPlanner.ViewModels
                     {
                         await _tourRepository.DeleteTourByIdAsync(tourViewModel.Id);
                         LoadTours();
-                        MessageBox.Show($"Tour successfully deleted");
+                        _messageBoxService.Show($"Tour successfully deleted");
                     }
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour could not be deleted");
+                _messageBoxService.Show($"Tour could not be deleted");
             }
             catch (Exception ex)
             {

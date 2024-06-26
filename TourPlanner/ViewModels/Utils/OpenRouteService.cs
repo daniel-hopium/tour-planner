@@ -28,7 +28,7 @@ namespace TourPlanner.ViewModels.Utils
         }
     }
 
-    public static class OpenRouteService
+    public class OpenRouteService : IOpenRouteService
     {
         private static readonly HttpClient client = new ();
 
@@ -36,7 +36,7 @@ namespace TourPlanner.ViewModels.Utils
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static async Task<(double[] coordinates, bool success)> GetParametersFromApi(string text)
+        public async Task<(double[] coordinates, bool success)> GetParametersFromApi(string text)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace TourPlanner.ViewModels.Utils
             }
         }      
 
-        public static async Task<Bitmap> GetTileAsync(int zoom, double x_tile, double y_tile) 
+        public async Task<Bitmap> GetTileAsync(int zoom, double x_tile, double y_tile) 
         {
             try
             {
@@ -115,7 +115,7 @@ namespace TourPlanner.ViewModels.Utils
             }
         }
 
-        public static async Task<(double[][] coordinates, double[] bbox, double distance, double duration)> GetDirectionsFromApi(TransportType transportType, string start, string end)
+        public async Task<(double[][] coordinates, double[] bbox, double distance, double duration)> GetDirectionsFromApi(TransportType transportType, string start, string end)
         {
             try
             {

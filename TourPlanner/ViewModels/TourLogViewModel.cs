@@ -35,6 +35,7 @@ namespace TourPlanner.ViewModels
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+
         public TourLogViewModel(TourLogModel tourLog)
         {
             _tourLog = tourLog;
@@ -84,10 +85,10 @@ namespace TourPlanner.ViewModels
                     }
                     else { AddError(nameof(TourDate), "Invalid Date"); }
                 }
-                catch (UtilsException)
+                /*catch (UtilsException)
                 {
                     MessageBox.Show($"Tour Date could not be extacted");
-                }
+                }*/
                 catch (Exception ex)
                 {
                     log.Error($"Error Convert Date: {ex}");

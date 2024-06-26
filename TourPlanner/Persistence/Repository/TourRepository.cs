@@ -416,7 +416,7 @@ public class TourRepository : ITourRepository
         }
     }
 
-    public async Task<(TransportType, double[], double[])> ImportTourAsync(string csvDatei)
+    public async Task<(TransportType, double[], double[], int)> ImportTourAsync(string csvDatei)
     {
         try
         {
@@ -490,7 +490,7 @@ public class TourRepository : ITourRepository
                 Double.TryParse(imagePathParts[4].Split(".")[0], out double end1);
                 double[] end = new double[] { end0, end1 };
 
-                return (tour.TransportType, start, end);
+                return (tour.TransportType, start, end, tourEntity.Id);
             }
         }
         catch (Exception ex)

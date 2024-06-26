@@ -16,13 +16,14 @@ using TourPlanner.Persistence.Utils;
 using log4net;
 using TourPlanner.Exceptions;
 using System.Reflection;
+using TourPlanner.UtilsForUnittests;
 
 namespace TourPlanner.ViewModels
 {
-    public class TourLogListControlViewModel : INotifyPropertyChanged
+    public class TourLogListControlViewModel : INotifyPropertyChanged, ITourLogListControlViewModel
     {
         private readonly ITourRepository _tourRepository;
-
+        private readonly IMessageBoxService _messageBoxService;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly TourLogListControlViewModel _instance = new();
@@ -35,6 +36,7 @@ namespace TourPlanner.ViewModels
         public TourLogListControlViewModel()
         {
             _tourRepository = TourRepository.Instance;
+            _messageBoxService = new MessageBoxService();
 
             _changeTourCommand = new RelayCommand(ChangeTour);
             _addLogCommand = new RelayCommand(AddLog);
@@ -73,12 +75,12 @@ namespace TourPlanner.ViewModels
                     tourId = tourLogViewModel.TourId;
                     await _tourRepository.DeleteTourLogByIdAsync(tourLogViewModel.Id);
                     LogsChangedNow(tourId);
-                    MessageBox.Show($"Tour log successfully deleted");
+                    _messageBoxService.Show($"Tour log successfully deleted");
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour log could not be deleted");
+                _messageBoxService.Show($"Tour log could not be deleted");
             }
             catch (Exception ex)
             {
@@ -102,14 +104,14 @@ namespace TourPlanner.ViewModels
                     {                       
                         await UpdateTourLog(submittedData);
                         LogsChangedNow(submittedData.TourId);
-                        MessageBox.Show($"Changes to the tour log have been successfully applied");
+                        _messageBoxService.Show($"Changes to the tour log have been successfully applied");
                     }
                 }
                 logWindow.DataContext = null;
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour log could not be updated");
+                _messageBoxService.Show($"Tour log could not be updated");
             }
             catch (Exception ex)
             {
@@ -153,13 +155,13 @@ namespace TourPlanner.ViewModels
                     {
                         await SaveTourLog(submittedData);
                         LogsChangedNow(submittedData.TourId);
-                        MessageBox.Show($"New tour log successfully created");
+                        _messageBoxService.Show($"New tour log successfully created");
                     }
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour log could not be created");
+                _messageBoxService.Show($"Tour log could not be created");
             }
             catch (Exception ex)
             {

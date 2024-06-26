@@ -17,24 +17,54 @@ using System.Configuration;
 using TourPlanner.Exceptions;
 using log4net;
 using System.Reflection;
+using TourPlanner.UtilsForUnittests;
 
 
 namespace TourPlanner.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private readonly TourListControlViewModel _tourListControlViewModel;
-        private readonly TourLogListControlViewModel _tourLogListControlViewModel;
+        private readonly ITourListControlViewModel _tourListControlViewModel;
+        private readonly ITourLogListControlViewModel _tourLogListControlViewModel;
 
         private readonly ITourRepository _tourRepository;
+        private readonly IMapCreator _mapCreator;
+        private readonly IFileDialogService _fileDialogService;
+        private readonly IMessageBoxService _messageBoxService;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MainViewModel()
         {
-            _tourRepository = TourRepository.Instance;            
+            _tourRepository = TourRepository.Instance;
+            _mapCreator = new MapCreator(new OpenRouteService());
+            _fileDialogService = new FileDialogService();
+            _messageBoxService = new MessageBoxService();
+
             _tourListControlViewModel = TourListControlViewModel.Instance;
             _tourListControlViewModel.NowExpandedTour += TourList_NowExpandedTour;
             _tourLogListControlViewModel = TourLogListControlViewModel.Instance;
+            _tourLogListControlViewModel.LogsChanged += LogList_LogsChanged;
+
+            _summarizeReportCommand = new RelayCommand(SummarizeReport);
+            _importTourCommand = new RelayCommand(ImportTour);
+        }
+
+        public MainViewModel(
+            ITourRepository tourRepository,
+            IMapCreator mapCreator,
+            IFileDialogService fileDialogService,
+            IMessageBoxService messageBoxService,
+            ITourListControlViewModel tourListControlViewModel,
+            ITourLogListControlViewModel tourLogListControlViewModel)
+        {
+            _tourRepository = tourRepository;
+            _mapCreator = mapCreator;
+            _fileDialogService = fileDialogService;
+            _messageBoxService = messageBoxService;
+
+            _tourListControlViewModel = tourListControlViewModel;
+            _tourListControlViewModel.NowExpandedTour += TourList_NowExpandedTour;
+            _tourLogListControlViewModel = tourLogListControlViewModel;
             _tourLogListControlViewModel.LogsChanged += LogList_LogsChanged;
 
             _summarizeReportCommand = new RelayCommand(SummarizeReport);
@@ -81,15 +111,15 @@ namespace TourPlanner.ViewModels
             {
                 await _tourRepository.GenerateSummarizeReportAsync();
 
-                MessageBox.Show($"Summarize Report successfully created");
+                _messageBoxService.Show($"Summarize Report successfully created");
             }
             catch (DALException)
             {
-                MessageBox.Show($"Error occured during calculating the Summarize Report");
+                _messageBoxService.Show($"Error occured during calculating the Summarize Report");
             }
             catch (UtilsException)
             {
-                MessageBox.Show($"Summarize Report could not be generated");
+                _messageBoxService.Show($"Summarize Report could not be generated");
             }
         }
 
@@ -97,36 +127,40 @@ namespace TourPlanner.ViewModels
         //////////////////////// Import Tour ///////////////////////////////////////////
         private async void ImportTour(object obj)
         {
+            int importedTourId = 0;
             try
             {
-                OpenFileDialog openFileDialog = new()
+                string filePath = _fileDialogService.OpenFile("CSV files (*.csv)|*.csv|All files (*.*)|*.*");
+                if (filePath != null)
                 {
-                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
-                };
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    string filePath = openFileDialog.FileName;
+                    (TourPlanner.Models.TransportType transportType, double[] start, double[] end, importedTourId) = await _tourRepository.ImportTourAsync(filePath);
 
-                    (TourPlanner.Models.TransportType transportType, double[] start, double[] end) = await _tourRepository.ImportTourAsync(filePath);
-
-                    await MapCreator.DownloadMapFromApi(transportType, start, end);
+                    await _mapCreator.DownloadMapFromApi(transportType, start, end);
 
                     _tourListControlViewModel.LoadToursCommand.Execute(null);
-                    MessageBox.Show($"Tour successfully created by Import");
+                    _messageBoxService.Show($"Tour successfully created by Import");
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour from Import could not be saved");
+                _messageBoxService.Show($"Tour from Import could not be saved");
             }
             catch (UtilsException)
             {
-                MessageBox.Show($"Map of Tour could not be downloaded");  // delete created tour ?
+                try
+                {
+                    await _tourRepository.DeleteTourByIdAsync(importedTourId);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Failed to delete imported tour", ex);
+                }
+                _messageBoxService.Show($"Map of Tour could not be downloaded");  // delete created tour ?
             }
             catch (Exception ex)
             {
                 log.Error("Import failed", ex);
-                MessageBox.Show($"Import failed");
+                _messageBoxService.Show($"Import failed");
             }
         }
 

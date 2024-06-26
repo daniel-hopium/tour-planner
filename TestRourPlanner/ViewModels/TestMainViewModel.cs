@@ -9,97 +9,151 @@ using Moq;
 using TourPlanner.Models;
 using TourPlanner.Persistence.Entities;
 using System.Collections.ObjectModel;
+using System.Windows;
+using TourPlanner.Exceptions;
+using TourPlanner.UtilsForUnittests;
+using TourPlanner.ViewModels.Utils;
+using System.Windows.Input;
+using System.Collections;
+using System.Net;
+using System.Reflection;
+using NUnit.Framework.Interfaces;
 
 namespace TestRourPlanner.ViewModels
 {
     public class TestMainViewModel
     {
         private Mock<ITourRepository> _mockTourRepository;
+        private Mock<IMapCreator> _mockMapCreator;
+        private Mock<IFileDialogService> _mockFileDialogService;
+        private Mock<IMessageBoxService> _mockMessageBoxService;
+        private Mock<IOpenRouteService> _mockOpenRouteService;
+        private Mock<ITourListControlViewModel> _mockTourListControlViewModel;
+        private Mock<ITourLogListControlViewModel> _mockTourLogListControlViewModel;
         private MainViewModel _mainViewModel;
+
+        private readonly string _filePath = "dummy/file/path.csv";
 
         [SetUp]
         public void Setup()
         {
             _mockTourRepository = new Mock<ITourRepository>();
+
+            // Mock the view models
+            _mockTourListControlViewModel = new Mock<ITourListControlViewModel>();
+            _mockTourLogListControlViewModel = new Mock<ITourLogListControlViewModel>();
+
             _mockTourRepository.Setup(x => x.GetAddressById(It.IsAny<int>())).Returns(new AddressEntity { Id = 0, City = "Test", Zip = 1234, Housenumber = "1", Street = "Test" }) ;
-            _mainViewModel = new MainViewModel(_mockTourRepository.Object);
+           
+            _mockFileDialogService = new Mock<IFileDialogService>();
+            _mockFileDialogService.Setup(f => f.OpenFile(It.IsAny<string>())).Returns(_filePath);
+            _mockMessageBoxService = new Mock<IMessageBoxService>();
+            _mockMapCreator = new Mock<IMapCreator>();
+            _mockOpenRouteService = new Mock<IOpenRouteService>();
+
+            _mainViewModel = new MainViewModel(
+                _mockTourRepository.Object,
+                _mockMapCreator.Object,
+                _mockFileDialogService.Object,
+                _mockMessageBoxService.Object,
+                _mockTourListControlViewModel.Object,
+                _mockTourLogListControlViewModel.Object
+            );
         }
 
         [Test]
-        public void CreateTour_SetsFormTourToNewTourViewModel()
+        public void TourList_NowExpandedTour_ShouldHandleEvent()
         {
-            _mainViewModel.TourCreateCommand.Execute(null);
+            // Arrange
+            TourModel tourModel = new()
+            {
+                Id = 1,
+                Name = "Test",
+                Description = "Test",
+                FromAddress = "1234 City, Street 12, Country",
+                ToAddress = "1234 City, Street 12, Country",
+                TransportType = TourPlanner.Models.TransportType.car,
+                Distance = 10,
+                EstimatedTime = 300,
+                Popularity = 0,
+                IsNew = null
+            };
 
-            Assert.IsNotNull(_mainViewModel.FormTour);
-            Assert.IsTrue(_mainViewModel.FormTour.Tour.IsNew);
+            var tourViewModel = new TourViewModel(_mockTourRepository.Object, tourModel, _mockMapCreator.Object, _mockMessageBoxService.Object, _mockOpenRouteService.Object);
+            var _mockChangeTourCommand = new Mock<ICommand>();
+            var methodInfo = typeof(MainViewModel).GetMethod("TourList_NowExpandedTour", BindingFlags.NonPublic | BindingFlags.Instance);  // Refelxion to run private "TourList_NowExpandedTour", invoked by event
+            _mockTourLogListControlViewModel.SetupGet(x => x.ChangeTourCommand).Returns(_mockChangeTourCommand.Object);
+
+            // Act
+            methodInfo.Invoke(_mainViewModel, new object[] { tourViewModel, EventArgs.Empty });
+
+            // Assert
+            Assert.That(_mainViewModel.ExpandedTour, Is.EqualTo(tourViewModel));
+            _mockChangeTourCommand.Verify(command => command.Execute(tourViewModel), Times.Once);
+        }
+
+
+        [Test]
+        public void SummarizeReportCommand_Executes()
+        {
+            // Act
+            _mainViewModel.SummarizeReportCommand.Execute(null);
+
+            // Assert
+            _mockTourRepository.Verify(mock => mock.GenerateSummarizeReportAsync(), Times.Once);         
+        }      
+
+        [Test]
+        public void ImportTourCommandActsExpectedWhen_Success()
+        {
+            // Arrange          
+            var transportType = TourPlanner.Models.TransportType.car;
+            var start = new double[] { 16.378317, 48.238992 };
+            var end = new double[] { 12.99528, 47.82287 };
+            var tourId = 1;
+
+            _mockTourRepository.Setup(r => r.ImportTourAsync(_filePath))
+                               .ReturnsAsync((transportType, start, end, tourId));
+
+            _mockMapCreator.Setup(x => x.DownloadMapFromApi(It.IsAny<TourPlanner.Models.TransportType>(), It.IsAny<double[]>(), It.IsAny<double[]>()))
+               .Returns(Task.CompletedTask);
+
+            var mockLoadToursCommand = new Mock<ICommand>();
+            _mockTourListControlViewModel.Setup(vm => vm.LoadToursCommand).Returns(mockLoadToursCommand.Object);
+            // Act
+            _mainViewModel.ImportTourCommand.Execute(null);
+
+            // Assert
+            _mockTourRepository.Verify(r => r.ImportTourAsync(_filePath), Times.Once);
+            _mockMapCreator.Verify(m => m.DownloadMapFromApi(transportType, start, end), Times.Once);
+            mockLoadToursCommand.Verify(vm => vm.Execute(null), Times.Once);
         }
 
         [Test]
-        public void SaveTour_WhenFormTourHasErrors_DoesNotCallRepository()
+        public void ImportTourCommandActsExpectedWhen_UtilsException()
         {
-            var tourViewModel = new TourViewModel(new TourModel());
-            tourViewModel.Name = ""; 
-            _mainViewModel.FormTour = tourViewModel;
+            // Arrange
+            var transportType = TourPlanner.Models.TransportType.car;
+            var start = new double[] { 16.378317, 48.238992 };
+            var end = new double[] { 12.99528, 47.82287 };
+            var tourId = 1;
 
-            _mainViewModel.SaveCommand.Execute(null);
+            _mockTourRepository.Setup(r => r.ImportTourAsync(_filePath))
+                               .ReturnsAsync((transportType, start, end, tourId));
+            
+            _mockMapCreator.Setup(r => r.DownloadMapFromApi(transportType, start, end))
+                               .Throws(new UtilsException());
 
-            _mockTourRepository.Verify(mock => mock.CreateTourAsync(It.IsAny<TourEntity>()), Times.Never);
-            _mockTourRepository.Verify(mock => mock.UpdateTourAsync(It.IsAny<TourEntity>()), Times.Never);
-        }
+            var mockLoadToursCommand = new Mock<ICommand>();
+            _mockTourListControlViewModel.Setup(vm => vm.LoadToursCommand).Returns(mockLoadToursCommand.Object);
 
-        [Test]
-        public void SaveTour_WhenFormTourIsNew_CallsCreateTourAsyncFromRepository()
-        {
-            TourModel tourModel = new TourModel();
-            tourModel.Name = "Test";
-            tourModel.Description = "Test";
-            tourModel.FromAddress = "Test 1, 1234 Test";
-            tourModel.ToAddress = "Test 1, 1234 Test";
-            tourModel.IsNew = true;
+            // Act
+            _mainViewModel.ImportTourCommand.Execute(null);
 
-            var tourViewModel = new TourViewModel(tourModel);
-
-            _mainViewModel.FormTour = tourViewModel;
-
-            _mainViewModel.SaveCommand.Execute(null);
-
-            _mockTourRepository.Verify(mock => mock.CreateTourAsync(It.IsAny<TourEntity>()), Times.Once);
-        }
-
-        [Test]
-        public void SaveTour_WhenFormTourIsNotNew_CallsUpdateTourAsyncFromRepository()
-        {
-            TourModel tourModel = new TourModel();
-            tourModel.Name = "Test";
-            tourModel.Description = "Test";
-            tourModel.FromAddress = "Test 1, 1234 Test";
-            tourModel.ToAddress = "Test 1, 1234 Test";
-            tourModel.IsNew = null;
-
-            var tourViewModel = new TourViewModel(tourModel);
-            _mainViewModel.FormTour = tourViewModel;
-
-            _mainViewModel.SaveCommand.Execute(null);
-
-            _mockTourRepository.Verify(mock => mock.UpdateTourAsync(It.IsAny<TourEntity>()), Times.Once);
-        }
-
-        [Test]
-        public void DeleteTour_CallsDeleteTourByIdAsyncFromRepository()
-        {
-            TourModel tourModel = new TourModel();
-            tourModel.Name = "Test";
-            tourModel.Description = "Test";
-            tourModel.FromAddress = "Test 1, 1234 Test";
-            tourModel.ToAddress = "Test 1, 1234 Test";
-            tourModel.IsNew = null;
-
-            var tourViewModel = new TourViewModel(tourModel);
-            //_mainViewModel.Tours = new ObservableCollection<TourViewModel> { tourViewModel };
-
-            _mainViewModel.TourDeleteCommand.Execute(tourViewModel);
-
-            _mockTourRepository.Verify(mock => mock.DeleteTourByIdAsync(tourViewModel.Id), Times.Once);
+            // Assert
+            _mockTourRepository.Verify(r => r.ImportTourAsync(_filePath), Times.Once);
+            _mockTourRepository.Verify(r => r.DeleteTourByIdAsync(tourId), Times.Once);
+            mockLoadToursCommand.Verify(vm => vm.Execute(null), Times.Never);
         }
     }
 }

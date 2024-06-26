@@ -25,6 +25,6 @@ namespace TourPlanner.Persistence.Repository
         public Task<bool> GenerateTourReport(int tourId);
         public Task GenerateSummarizeReportAsync();
         public Task<bool> GenerateTourExportAsync(int tourId);
-        public Task<(TransportType, double[], double[])> ImportTourAsync(string csvDatei);
+        public Task<(TransportType, double[], double[], int)> ImportTourAsync(string csvDatei);
     }
 }

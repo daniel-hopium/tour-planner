@@ -23,7 +23,7 @@ using System.Reflection;
 
 namespace TourPlanner.ViewModels.Utils
 {  
-    public static class MapCreator
+    public class MapCreator : IMapCreator
     {
         public enum Marker
         {
@@ -33,10 +33,15 @@ namespace TourPlanner.ViewModels.Utils
             MARKER_RED_32px
         }
 
+        public MapCreator(IOpenRouteService openRouteService)
+        {
+            _openRouteService = openRouteService;
+        }
+
         public record GeoCoordinate(double Lon, double Lat) { }
 
+        private readonly IOpenRouteService _openRouteService;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
 
         public static int Zoom { get; set; } = 18;
 
@@ -61,7 +66,7 @@ namespace TourPlanner.ViewModels.Utils
         }
 
 
-        public static async Task<Bitmap> GenerateImageAsync(double[][] coordinates, double[] bbox, double[] coordinatesStart, double[] coordinatesEnd)
+        public async Task<Bitmap> GenerateImageAsync(double[][] coordinates, double[] bbox, double[] coordinatesStart, double[] coordinatesEnd)
         {
             try
             {
@@ -186,7 +191,7 @@ namespace TourPlanner.ViewModels.Utils
                     {
                         for (int y = topLeftTile.Y; y <= bottomRightTile.Y; y++)
                         {
-                            Bitmap tileImage = await OpenRouteService.GetTileAsync(zoom, x, y);
+                            Bitmap tileImage = await _openRouteService.GetTileAsync(zoom, x, y);
                             int xPos = (x - topLeftTile.X) * 256;
                             int yPos = (y - topLeftTile.Y) * 256;
                             g.DrawImage(tileImage, xPos, yPos);
@@ -233,7 +238,7 @@ namespace TourPlanner.ViewModels.Utils
         }
 
 
-        private static Bitmap LoadMarkerIcon(Marker marker)
+        private Bitmap LoadMarkerIcon(Marker marker)
         {
             string filename = marker switch
             {
@@ -249,7 +254,7 @@ namespace TourPlanner.ViewModels.Utils
             return new Bitmap(resourcePath);
         }
 
-        public static void SaveMap(Bitmap map, string transport, string start, string end)
+        public void SaveMap(Bitmap map, string transport, string start, string end)
         {
             try
             {
@@ -267,13 +272,13 @@ namespace TourPlanner.ViewModels.Utils
             }
         }
 
-        public static async Task DownloadMapFromApi(TourPlanner.Models.TransportType transportType, double[] start, double[] end)
+        public async Task DownloadMapFromApi(TourPlanner.Models.TransportType transportType, double[] start, double[] end)
         {
             try
             {
                 if (!File.Exists($"{ConfigurationManager.AppSettings["ImagesDirectory"]}{transportType}_{start}_{end}.png"))
                 {
-                    (double[][] coordinates, double[] bbox, _, _) = await OpenRouteService.GetDirectionsFromApi(transportType, $"{start[0].ToString("0.######", CultureInfo.InvariantCulture)},{start[1].ToString("0.######", CultureInfo.InvariantCulture)}", $"{end[0].ToString("0.######", CultureInfo.InvariantCulture)},{end[1].ToString("0.######", CultureInfo.InvariantCulture)}");
+                    (double[][] coordinates, double[] bbox, _, _) = await _openRouteService.GetDirectionsFromApi(transportType, $"{start[0].ToString("0.######", CultureInfo.InvariantCulture)},{start[1].ToString("0.######", CultureInfo.InvariantCulture)}", $"{end[0].ToString("0.######", CultureInfo.InvariantCulture)},{end[1].ToString("0.######", CultureInfo.InvariantCulture)}");
 
                     SaveMap(await GenerateImageAsync(coordinates, bbox, start, end), transportType.ToString(), $"{start[0]}_{start[1]}", $"{end[0]}_{end[1]}");
                 }
@@ -285,7 +290,7 @@ namespace TourPlanner.ViewModels.Utils
             }
         }
 
-        public static BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap) 
+        public BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap) 
         {
             try 
             { 

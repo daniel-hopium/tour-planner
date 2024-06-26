@@ -30,6 +30,7 @@ using System.Configuration;
 using log4net;
 using TourPlanner.Exceptions;
 using System.Reflection;
+using TourPlanner.UtilsForUnittests;
 
 namespace TourPlanner.ViewModels
 {
@@ -68,6 +69,9 @@ namespace TourPlanner.ViewModels
 
 
         private readonly ITourRepository _tourRepository;
+        private readonly IMapCreator _mapCreator;
+        private readonly IMessageBoxService _messageBoxService;
+        private readonly IOpenRouteService _openRouteService;
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -86,7 +90,10 @@ namespace TourPlanner.ViewModels
         {
             _tour = new TourModel();
             _tourRepository = TourRepository.Instance;
-
+            _openRouteService = new OpenRouteService();
+            _mapCreator = new MapCreator(_openRouteService);
+            _messageBoxService = new MessageBoxService();
+            
             _loadMapCommand = new RelayCommand(LoadMap);
             _loadLogsCommand = new RelayCommand(LoadLogs);
             _calculateCommand = new RelayCommand(CalculateRoute);
@@ -99,7 +106,10 @@ namespace TourPlanner.ViewModels
         {
             _tour = tour;
             _tourRepository = TourRepository.Instance;
-
+            _openRouteService = new OpenRouteService();
+            _mapCreator = new MapCreator(_openRouteService);
+            _messageBoxService = new MessageBoxService();
+            
             _loadMapCommand = new RelayCommand(LoadMap);
             _loadLogsCommand = new RelayCommand(LoadLogs);
             _tourSetCommand = new RelayCommand(SetTour);
@@ -107,7 +117,33 @@ namespace TourPlanner.ViewModels
             _saveCommand = new RelayCommand(SaveTour);
             _setEditModeCommand = new RelayCommand(SetEditMode);
         }
+        public TourViewModel(ITourRepository tourRepository, TourModel tourModel, IMapCreator mapCreator, IMessageBoxService messageBox, IOpenRouteService openRouteService)
+        {
+            _tour = tourModel;
+            _tourRepository = tourRepository;
+            _mapCreator = mapCreator;
+            _messageBoxService = messageBox;
+            _openRouteService = openRouteService;
 
+            _loadMapCommand = new RelayCommand(LoadMap);
+            _loadLogsCommand = new RelayCommand(LoadLogs);
+            _calculateCommand = new RelayCommand(CalculateRoute);
+            _tourSetCommand = new RelayCommand(SetTour);
+            _saveCommand = new RelayCommand(SaveTour);
+            _setEditModeCommand = new RelayCommand(SetEditMode);
+        }
+
+
+        private bool? _isNew;
+        public bool? IsNew
+        {
+            get { return _tour.IsNew; }
+            set
+            {
+                 _tour.IsNew = value;
+                 OnPropertyChanged(nameof(IsNew));
+            }
+        }
 
         private bool _isExpanded;
 
@@ -284,7 +320,7 @@ namespace TourPlanner.ViewModels
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour log could not be loaded");
+                _messageBoxService.Show($"Tour log could not be loaded");
             }
             catch (Exception ex)
             {
@@ -301,14 +337,14 @@ namespace TourPlanner.ViewModels
             catch (Exception ex)
             {
                 log.Error($"Map could not be loaded: {ex}");
-                MessageBox.Show($"Map could not be loaded");
+                _messageBoxService.Show($"Map could not be loaded");
             }
         }
 
 
          public IEnumerable GetErrors(string? propertyName)
          {
-            string pattern = @"^(?:(\d{4,}\s)?[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(\s\d+[a-zA-Z]?)?)?(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*)?|([A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(\s\d+[a-zA-Z]?)?)?,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*))$";
+            string pattern = @"^(?:\d{4,}\s[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(\s\d+[a-zA-Z]?)?)?(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*)?|([A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*(\s\d+[a-zA-Z]?)?)?,\s*[A-Za-zßüöäÜÖÄ]+[A-Za-zßüöäÜÖÄ\s\-]*))$";
 
              if (propertyName == "Name" && string.IsNullOrEmpty(Name))
              {                
@@ -359,25 +395,25 @@ namespace TourPlanner.ViewModels
             {
                 _bitmap?.Dispose();
 
-                (double[] coordinatesStart, bool successStart) = await OpenRouteService.GetParametersFromApi(FromAddress);
+                (double[] coordinatesStart, bool successStart) = await _openRouteService.GetParametersFromApi(FromAddress);
                 if (successStart) _coordinatesStart = coordinatesStart;
-                (double[] coordinatesEnd, bool successEnd) = await OpenRouteService.GetParametersFromApi(ToAddress);
+                (double[] coordinatesEnd, bool successEnd) = await _openRouteService.GetParametersFromApi(ToAddress);
                 if (successEnd) _coordinatesEnd = coordinatesEnd;
 
                 if (successStart && successEnd)
                 {
-                    (double[][] coordinates, double[] bbox, double distance, double duration) = await OpenRouteService.GetDirectionsFromApi(TransportType, $"{coordinatesStart[0].ToString("0.######", CultureInfo.InvariantCulture)},{coordinatesStart[1].ToString("0.######", CultureInfo.InvariantCulture)}", $"{coordinatesEnd[0].ToString("0.######", CultureInfo.InvariantCulture)},{coordinatesEnd[1].ToString("0.######", CultureInfo.InvariantCulture)}");
+                    (double[][] coordinates, double[] bbox, double distance, double duration) = await _openRouteService.GetDirectionsFromApi(TransportType, $"{coordinatesStart[0].ToString("0.######", CultureInfo.InvariantCulture)},{coordinatesStart[1].ToString("0.######", CultureInfo.InvariantCulture)}", $"{coordinatesEnd[0].ToString("0.######", CultureInfo.InvariantCulture)},{coordinatesEnd[1].ToString("0.######", CultureInfo.InvariantCulture)}");
 
                     Distance = distance / 1000;
                     EstimatedTime = (int)duration / 60;
 
-                    _bitmap = await MapCreator.GenerateImageAsync(coordinates, bbox, coordinatesStart, coordinatesEnd);
-                    Map = MapCreator.ConvertBitmapToBitmapImage(_bitmap);
+                    _bitmap = await _mapCreator.GenerateImageAsync(coordinates, bbox, coordinatesStart, coordinatesEnd);
+                    Map = _mapCreator.ConvertBitmapToBitmapImage(_bitmap);
                 }
 
                 else
                 {
-                    MessageBox.Show($"No route found!");
+                    _messageBoxService.Show($"No route found!");
 
                     Distance = 0;
                     EstimatedTime = 0;
@@ -386,7 +422,7 @@ namespace TourPlanner.ViewModels
             }
             catch (UtilsException)
             {
-                MessageBox.Show($"Route could not be loaded");
+                _messageBoxService.Show($"Route could not be loaded");
             }
             catch (Exception ex)
             {
@@ -425,40 +461,40 @@ namespace TourPlanner.ViewModels
                 // if error don't save
                 if (HasErrors)
                 {
-                    MessageBox.Show($"Tour could not be saved, first handle the errors");
+                    _messageBoxService.Show($"Tour could not be saved, first handle the errors");
                     return;
                 }
 
                 // calculate route and save map in filesystem
                 await CalculateRoute();
 
-                MapCreator.SaveMap(_bitmap, TransportType.ToString(), $"{_coordinatesStart[0]}_{_coordinatesStart[1]}", $"{_coordinatesEnd[0]}_{_coordinatesEnd[1]}");
+                _mapCreator.SaveMap(_bitmap, TransportType.ToString(), $"{_coordinatesStart[0]}_{_coordinatesStart[1]}", $"{_coordinatesEnd[0]}_{_coordinatesEnd[1]}");
                 Image = $"{TransportType}_{_coordinatesStart[0]}_{_coordinatesStart[1]}_{_coordinatesEnd[0]}_{_coordinatesEnd[1]}.png";
 
-                // Update
-                if (_tour.IsNew == null)
+                //  Create
+                if (_tour.IsNew == true)
                 {                   
-                    await _tourRepository.UpdateTourAsync(TourMapper.TourModelToEntity(_tour, _tourRepository));
+                   await _tourRepository.CreateTourAsync(TourMapper.TourModelToEntity(_tour, _tourRepository));
                     _tour = new TourModel();
-                    MessageBox.Show($"Changes to the tour have been successfully applied");
+                    _messageBoxService.Show($"New tour successfully created");
                     OnUpdateCompleted(EventArgs.Empty);
                 }
-                // Create
+                // Update
                 else
                 {
-                    await _tourRepository.CreateTourAsync(TourMapper.TourModelToEntity(_tour, _tourRepository));
+                     await _tourRepository.UpdateTourAsync(TourMapper.TourModelToEntity(_tour, _tourRepository));
                     _tour = new TourModel();
-                    MessageBox.Show($"New tour successfully created");
-                    OnUpdateCompleted(EventArgs.Empty);
+                    _messageBoxService.Show($"Changes to the tour have been successfully applied");
+                    OnUpdateCompleted(EventArgs.Empty);              
                 }
             }
             catch (DALException)
             {
-                MessageBox.Show($"Tour could not be saved");
+                _messageBoxService.Show($"Tour could not be saved");
             }
             catch (UtilsException)
             {
-                MessageBox.Show($"Route could not be calculated");
+                _messageBoxService.Show($"Route could not be calculated");
             }
             catch (Exception ex)
             {
