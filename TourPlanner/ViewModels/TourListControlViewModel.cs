@@ -237,8 +237,13 @@ public class TourListControlViewModel : INotifyPropertyChanged, ITourListControl
         t.Description.ToLower().Contains(lowerSearchText) ||
         t.FromAddress.ToLower().Contains(lowerSearchText) ||
         t.ToAddress.ToLower().Contains(lowerSearchText) ||
+        t.TransportType.ToString().ToLower().Contains(lowerSearchText) ||
         t.TourLogs.Any(log =>
-          log.Comment.ToLower().Contains(lowerSearchText) || log.Rating.ToString().Contains(lowerSearchText))
+          log.Comment.ToLower().Contains(lowerSearchText) || 
+          log.Rating.ToString().Contains(lowerSearchText) ||
+          log.Difficulty.ToString().Contains(lowerSearchText) ||
+          log.TotalTime.ToString().Contains(lowerSearchText) ||
+          log.TourDate.ToString().Contains(lowerSearchText))
       ).ToList();
 
       // Ranking based on popularity and child-friendliness
