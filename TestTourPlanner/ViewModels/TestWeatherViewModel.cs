@@ -1,91 +1,71 @@
-﻿using NUnit.Framework;
-using Moq;
-using Moq.Protected;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Moq;
 using TourPlanner.ViewModels;
-using Newtonsoft.Json;
-using TourPlanner.Models;
-using TourPlanner.Views;
 
-namespace TestTourPlanner.ViewModels
+namespace TestTourPlanner.ViewModels;
+
+[TestFixture]
+public class WeatherViewModelTests
 {
-    [TestFixture]
-    public class WeatherViewModelTests
+  [SetUp]
+  public void Setup()
+  {
+    _httpMessageHandlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+    _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+    _weatherViewModel = new WeatherViewModel();
+  }
+
+  private Mock<HttpMessageHandler> _httpMessageHandlerMock;
+  private HttpClient _httpClient;
+  private WeatherViewModel _weatherViewModel;
+
+  [Test]
+  public void PropertyChangedEvent_ShouldBeTriggered_WhenWeatherTemperatureChanges()
+  {
+    // Arrange
+    var eventTriggered = false;
+    _weatherViewModel.PropertyChanged += (sender, args) =>
     {
-        private Mock<HttpMessageHandler> _httpMessageHandlerMock;
-        private HttpClient _httpClient;
-        private WeatherViewModel _weatherViewModel;
+      if (args.PropertyName == nameof(WeatherViewModel.WeatherTemperature)) eventTriggered = true;
+    };
 
-        [SetUp]
-        public void Setup()
-        {
-            _httpMessageHandlerMock = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-            _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-            _weatherViewModel = new WeatherViewModel();
-        }
+    // Act
+    _weatherViewModel.WeatherTemperature = "30.0°C";
 
-        [Test]
-        public void PropertyChangedEvent_ShouldBeTriggered_WhenWeatherTemperatureChanges()
-        {
-            // Arrange
-            var eventTriggered = false;
-            _weatherViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(WeatherViewModel.WeatherTemperature))
-                {
-                    eventTriggered = true;
-                }
-            };
+    // Assert
+    Assert.IsTrue(eventTriggered);
+  }
 
-            // Act
-            _weatherViewModel.WeatherTemperature = "30.0°C";
+  [Test]
+  public void PropertyChangedEvent_ShouldBeTriggered_WhenWeatherConditionChanges()
+  {
+    // Arrange
+    var eventTriggered = false;
+    _weatherViewModel.PropertyChanged += (sender, args) =>
+    {
+      if (args.PropertyName == nameof(WeatherViewModel.WeatherCondition)) eventTriggered = true;
+    };
 
-            // Assert
-            Assert.IsTrue(eventTriggered);
-        }
+    // Act
+    _weatherViewModel.WeatherCondition = "Rainy";
 
-        [Test]
-        public void PropertyChangedEvent_ShouldBeTriggered_WhenWeatherConditionChanges()
-        {
-            // Arrange
-            var eventTriggered = false;
-            _weatherViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(WeatherViewModel.WeatherCondition))
-                {
-                    eventTriggered = true;
-                }
-            };
+    // Assert
+    Assert.IsTrue(eventTriggered);
+  }
 
-            // Act
-            _weatherViewModel.WeatherCondition = "Rainy";
+  [Test]
+  public void PropertyChangedEvent_ShouldBeTriggered_WhenSelectedCityChanges()
+  {
+    // Arrange
+    var eventTriggered = false;
+    _weatherViewModel.PropertyChanged += (sender, args) =>
+    {
+      if (args.PropertyName == nameof(WeatherViewModel.SelectedCity)) eventTriggered = true;
+    };
 
-            // Assert
-            Assert.IsTrue(eventTriggered);
-        }
+    // Act
+    _weatherViewModel.SelectedCity = "Paris";
 
-        [Test]
-        public void PropertyChangedEvent_ShouldBeTriggered_WhenSelectedCityChanges()
-        {
-            // Arrange
-            var eventTriggered = false;
-            _weatherViewModel.PropertyChanged += (sender, args) =>
-            {
-                if (args.PropertyName == nameof(WeatherViewModel.SelectedCity))
-                {
-                    eventTriggered = true;
-                }
-            };
-
-            // Act
-            _weatherViewModel.SelectedCity = "Paris";
-
-            // Assert
-            Assert.IsTrue(eventTriggered);
-        }
-    }
+    // Assert
+    Assert.IsTrue(eventTriggered);
+  }
 }

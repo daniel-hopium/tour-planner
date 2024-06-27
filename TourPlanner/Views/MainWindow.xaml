@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TourPlanner.Views"
-        xmlns:viewModel="clr-namespace:TourPlanner.ViewModels"
         xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
         xmlns:viewUtils="clr-namespace:TourPlanner.Views.Utils"
         mc:Ignorable="d"
@@ -13,50 +12,51 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="RoundedIconButtonStyle.xaml"/>
+                <ResourceDictionary Source="RoundedIconButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <viewModel:TourListControlViewModel x:Key="TourListControlViewModel" />
-            <viewModel:TourLogListControlViewModel x:Key="TourLogListControllViewModel" />
         </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="350"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- Linker Bereich: Tour List -->
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Tour Planner" FontSize="32" FontWeight="Bold" Margin="15 20 15 0"/>
+            <TextBlock Grid.Row="0" Text="Tour Planner" FontSize="32" FontWeight="Bold" Margin="15 20 15 0" />
             <local:TourListControl Grid.Row="1" Margin="10,0,10,10" />
         </Grid>
 
-        
-        
+
         <!-- Rechter Bereich: Daten und Aktionen -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            
+
             <!-- Button Leiste -->
             <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" Margin="10">
-                <local:WeatherUserControl  Margin="20, 5" Height="50" Width="400"
-                                           DataContext="{Binding WeatherViewModel}" />
-                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Summarize" Command="{Binding SummarizeReportCommand}" Icon="BarChart" Background="Green"/>
-                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Import Tour" Command="{Binding ImportTourCommand}" Icon="Upload" Background="Gold"/>
-                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Add Tour" Click="AddTour_Click" Icon="Plus" Margin="5 5 40 5"/>
-                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Help" Click="HelpButton_Click" Icon="InfoCircle" Background="White" Foreground="Blue"/>
+                <local:WeatherUserControl Margin="20, 5" Height="50" Width="400"
+                                          DataContext="{Binding WeatherViewModel}" />
+                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Summarize"
+                                      Command="{Binding SummarizeReportCommand}" Icon="BarChart" Background="Green" />
+                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Import Tour"
+                                      Command="{Binding ImportTourCommand}" Icon="Upload" Background="Gold" />
+                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Add Tour"
+                                      Click="AddTour_Click" Icon="Plus" Margin="5 5 40 5" />
+                <viewUtils:IconButton Style="{StaticResource RoundedIconButton}" Content="Help"
+                                      Click="HelpButton_Click" Icon="InfoCircle" Background="White" Foreground="Blue" />
             </StackPanel>
 
             <!-- Tabs -->
@@ -64,7 +64,7 @@
                 <TabControl.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="TabItemStyle.xaml"/>
+                            <ResourceDictionary Source="TabItemStyle.xaml" />
                         </ResourceDictionary.MergedDictionaries>
                     </ResourceDictionary>
                 </TabControl.Resources>
@@ -72,13 +72,15 @@
                 <!-- Route-Tab -->
                 <TabItem x:Name="Route" Header="Route" Style="{StaticResource TabItemStyle}">
                     <Grid>
-                        <ScrollViewer Name ="MapViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer Name="MapViewer" HorizontalScrollBarVisibility="Auto"
+                                      VerticalScrollBarVisibility="Auto">
                             <Viewbox>
-                                <Image Name="MapImage" Source="{Binding ExpandedTour.Map}" RenderTransformOrigin="0.5, 0.5">
+                                <Image Name="MapImage" Source="{Binding ExpandedTour.Map}"
+                                       RenderTransformOrigin="0.5, 0.5">
                                     <Image.RenderTransform>
                                         <TransformGroup>
-                                            <ScaleTransform x:Name="scaleTransform" ScaleX="0.45" ScaleY="0.45"/>
-                                            <TranslateTransform x:Name="translateTransform" X="-620" Y="-400"/>
+                                            <ScaleTransform x:Name="scaleTransform" ScaleX="0.45" ScaleY="0.45" />
+                                            <TranslateTransform x:Name="translateTransform" X="-620" Y="-400" />
                                         </TransformGroup>
                                     </Image.RenderTransform>
                                 </Image>
@@ -88,53 +90,54 @@
                 </TabItem>
 
                 <!-- TourLog-Tab -->
-                <TabItem  x:Name="Logs" Header="Tour Logs" Style="{StaticResource TabItemStyle}">
-                    <local:TourLogListControl/>
+                <TabItem x:Name="Logs" Header="Tour Logs" Style="{StaticResource TabItemStyle}">
+                    <local:TourLogListControl />
                 </TabItem>
 
                 <!-- TourForm-Tab -->
                 <TabItem x:Name="Tour" IsEnabled="False" Style="{StaticResource TabItemStyle}">
                     <TabItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="true">
+                                            <Setter Property="TextElement.Foreground" Value="white" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="false">
+                                            <Setter Property="TextElement.Foreground" Value="blue" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsEnabled, ElementName=Tour}" Value="false">
+                                            <Setter Property="TextElement.Foreground" Value="gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Text="Tour" Margin="0 0 5 0" />
+                            <fa:ImageAwesome Icon="Pencil" x:Name="FontAwesome" Height="15" Width="14"
+                                             RenderTransformOrigin="1.724,0.347">
+                                <fa:ImageAwesome.Style>
+                                    <Style TargetType="fa:ImageAwesome">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="true">
-                                                <Setter Property="TextElement.Foreground" Value="white"/>
+                                                <Setter Property="Foreground" Value="white" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="false">
-                                                <Setter Property="TextElement.Foreground" Value="blue"/>
+                                                <Setter Property="Foreground" Value="blue" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsEnabled, ElementName=Tour}" Value="false">
-                                                <Setter Property="TextElement.Foreground" Value="gray"/>
+                                                <Setter Property="Foreground" Value="gray" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </StackPanel.Style>
-                                <TextBlock Text="Tour" Margin="0 0 5 0"/>
-                                <fa:ImageAwesome Icon="Pencil" x:Name="FontAwesome" Height="15" Width="14" RenderTransformOrigin="1.724,0.347">
-                                    <fa:ImageAwesome.Style>
-                                        <Style TargetType="fa:ImageAwesome">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="true">
-                                                    <Setter Property="Foreground" Value="white"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsSelected, ElementName=Tour}" Value="false">
-                                                    <Setter Property="Foreground" Value="blue"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsEnabled, ElementName=Tour}" Value="false">
-                                                    <Setter Property="Foreground" Value="gray"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </fa:ImageAwesome.Style>
-                                </fa:ImageAwesome>
-                            </StackPanel>
-                        </TabItem.Header>
+                                </fa:ImageAwesome.Style>
+                            </fa:ImageAwesome>
+                        </StackPanel>
+                    </TabItem.Header>
 
                     <!-- Rechter Bereich: Tour-Form -->
                     <local:TourFormControl />
-                    
+
                 </TabItem>
             </TabControl>
         </Grid>

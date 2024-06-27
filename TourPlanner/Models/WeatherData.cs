@@ -1,28 +1,22 @@
 ﻿using Newtonsoft.Json;
 
-namespace TourPlanner.Models
+namespace TourPlanner.Models;
+
+public class WeatherData
 {
-    public class WeatherData
-    {
-        [JsonProperty("current")]
-        public CurrentWeather Current { get; set; }
-    }
+  [JsonProperty("current")] public CurrentWeather Current { get; set; }
+}
 
-    public class CurrentWeather
-    {
-        [JsonProperty("temp_c")]
-        public float TempC { get; set; }
+public class CurrentWeather
+{
+  [JsonProperty("temp_c")] public float TempC { get; set; }
 
-        [JsonProperty("condition")]
-        public Condition Condition { get; set; }
-    }
+  [JsonProperty("condition")] public Condition Condition { get; set; }
+}
 
-    public class Condition
-    {
-        [JsonProperty("text")]
-        public string Text { get; set; }
+public class Condition
+{
+  [JsonProperty("text")] public string Text { get; set; }
 
-        [JsonProperty("icon")]
-        public string Icon { get; set; }
-    }
+  [JsonProperty("icon")] public string Icon { get; set; }
 }

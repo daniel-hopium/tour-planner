@@ -12,10 +12,12 @@
 
             <!-- Weather Information -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MouseLeftButtonUp="WeatherInfo_Click">
-                <TextBlock FontSize="24" FontWeight="Bold" Text="{Binding WeatherTemperature}" Margin="10,0" VerticalAlignment="Center"/>
-                <TextBlock FontSize="16" Text="{Binding WeatherCondition}" Margin="10, 0, 0, 0" VerticalAlignment="Center"/>
-                <TextBlock FontSize="16" Text=" in "  VerticalAlignment="Center"/>
-                <TextBlock FontSize="16" Text="{Binding SelectedCity}"  VerticalAlignment="Center"/>
+                <TextBlock FontSize="24" FontWeight="Bold" Text="{Binding WeatherTemperature}" Margin="10,0"
+                           VerticalAlignment="Center" />
+                <TextBlock FontSize="16" Text="{Binding WeatherCondition}" Margin="10, 0, 0, 0"
+                           VerticalAlignment="Center" />
+                <TextBlock FontSize="16" Text=" in " VerticalAlignment="Center" />
+                <TextBlock FontSize="16" Text="{Binding SelectedCity}" VerticalAlignment="Center" />
             </StackPanel>
         </StackPanel>
     </Border>

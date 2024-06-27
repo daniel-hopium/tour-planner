@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
-namespace TourPlanner.UtilsForUnittests
+namespace TourPlanner.UtilsForUnittests;
+
+public interface IMessageBoxService
 {
-    public interface IMessageBoxService
-    {
-        void Show(string message);
-    }
+  void Show(string message);
+}
 
-    public class MessageBoxService : IMessageBoxService
-    {
-        public void Show(string message)
-        {
-            MessageBox.Show(message);
-        }
-    }
+public class MessageBoxService : IMessageBoxService
+{
+  public void Show(string message)
+  {
+    MessageBox.Show(message);
+  }
 }

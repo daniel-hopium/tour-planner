@@ -5,21 +5,21 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TabItem">
-                    
-                    <Border Name="Bd"  BorderThickness="1.5" CornerRadius="4,4,0,0">
+
+                    <Border Name="Bd" BorderThickness="1.5" CornerRadius="4,4,0,0">
                         <Border.BorderBrush>
-                            <SolidColorBrush Color="Blue"/>
+                            <SolidColorBrush Color="Blue" />
                         </Border.BorderBrush>
 
                         <Grid Name="Panel">
                             <ContentPresenter x:Name="ContentSite"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            ContentSource="Header"
-                            Margin="30,5"/>
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              ContentSource="Header"
+                                              Margin="30,5" />
                         </Grid>
                     </Border>
-                   
+
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Panel" Property="Background" Value="Blue" />
@@ -35,7 +35,7 @@
                             <Setter TargetName="Bd" Property="Border.BorderBrush" Value="LightGray" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Cursor" Value="Hand" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

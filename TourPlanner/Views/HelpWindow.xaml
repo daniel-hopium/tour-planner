@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:TourPlanner.Views"
         xmlns:viewUtils="clr-namespace:TourPlanner.Views.Utils"
         xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
         mc:Ignorable="d"
@@ -12,11 +11,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="RoundedIconButtonStyle.xaml"/>
+                <ResourceDictionary Source="RoundedIconButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Style TargetType="ListBoxItem">
-                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
@@ -25,10 +24,10 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                                    <Setter TargetName="Border" Property="Background" Value="Transparent" />
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                                    <Setter TargetName="Border" Property="Background" Value="Transparent" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -41,168 +40,202 @@
 
     <Grid Margin="10">
         <StackPanel>
-            <Label Content="Help" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+            <Label Content="Help" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10" />
             <ListBox>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Add Tour" Cursor="Arrow" Icon="Plus" Margin="5 5 40 5"/>
-                        <TextBlock Grid.Column="1" Text="Button to get to form to create a new tour" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}"
+                                              Content="Add Tour" Cursor="Arrow" Icon="Plus" Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1" Text="Button to get to form to create a new tour"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton  Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Summarize" Icon="BarChart" Cursor="Arrow" Background="Green" Margin="5 5 40 5"/>
-                        <TextBlock  Grid.Column="1" Text="Button to generate a report for statistical analysis, which provides for each tour the average time, -distance and -rating over all associated tour-logs" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}"
+                                              Content="Summarize" Icon="BarChart" Cursor="Arrow" Background="Green"
+                                              Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1"
+                                   Text="Button to generate a report for statistical analysis, which provides for each tour the average time, -distance and -rating over all associated tour-logs"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Help" Icon="InfoCircle" Cursor="Arrow" Background="White" Foreground="Blue" Margin="5 5 40 5"/>
-                        <TextBlock Grid.Column="1" Text="Button to get help for using the application" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Help"
+                                              Icon="InfoCircle" Cursor="Arrow" Background="White" Foreground="Blue"
+                                              Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1" Text="Button to get help for using the application"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" Height="20" Text="Tourname" FontStyle="Italic" Margin="5 15 40 15"/>
-                        <TextBlock Grid.Column="1" Text="This tour in the list is in the edit-mode -> tour can be edited in the tour form" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Center" Height="20" Text="Tourname"
+                                   FontStyle="Italic" Margin="5 15 40 15" />
+                        <TextBlock Grid.Column="1"
+                                   Text="This tour in the list is in the edit-mode -> tour can be edited in the tour form"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <fa:ImageAwesome Icon="Pencil" Grid.Column="0" HorizontalAlignment="Center"  Foreground="Blue" Height="20" Width="20" RenderTransformOrigin="1.724,0.347" Margin="5 15 40 15"/>
-                        <TextBlock Grid.Column="1" Text="Icon to get to form to edit the tour clicked in the list (clicked twice -> edit-mode will be exited)" VerticalAlignment="Center"/>
+                        <fa:ImageAwesome Icon="Pencil" Grid.Column="0" HorizontalAlignment="Center" Foreground="Blue"
+                                         Height="20" Width="20" RenderTransformOrigin="1.724,0.347" Margin="5 15 40 15" />
+                        <TextBlock Grid.Column="1"
+                                   Text="Icon to get to form to edit the tour clicked in the list (clicked twice -> edit-mode will be exited)"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <fa:ImageAwesome Icon="Print" Grid.Column="0" HorizontalAlignment="Center" Foreground="Green" Height="20" Width="20" Margin="5 15 40 15"/>
-                        <TextBlock Grid.Column="1" Text="Icon to generate a report about the tour clicked in the list" VerticalAlignment="Center"/>
+                        <fa:ImageAwesome Icon="Print" Grid.Column="0" HorizontalAlignment="Center" Foreground="Green"
+                                         Height="20" Width="20" Margin="5 15 40 15" />
+                        <TextBlock Grid.Column="1" Text="Icon to generate a report about the tour clicked in the list"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <fa:ImageAwesome Icon="FileArchiveOutline" Grid.Column="0" HorizontalAlignment="Center" Foreground="Gold" Height="20" Width="20" Margin="5 15 40 15"/>
-                        <TextBlock Grid.Column="1" Text="Icon to export the data of the tour clicked in the list" VerticalAlignment="Center"/>
+                        <fa:ImageAwesome Icon="FileArchiveOutline" Grid.Column="0" HorizontalAlignment="Center"
+                                         Foreground="Gold" Height="20" Width="20" Margin="5 15 40 15" />
+                        <TextBlock Grid.Column="1" Text="Icon to export the data of the tour clicked in the list"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <fa:ImageAwesome Icon="Trash" Grid.Column="0" HorizontalAlignment="Center" Foreground="Red" Height="20" Width="20" Margin="5 15 40 15"/>
-                        <TextBlock Grid.Column="1" Text="Icon to delete the tour clicked in the list" VerticalAlignment="Center"/>
+                        <fa:ImageAwesome Icon="Trash" Grid.Column="0" HorizontalAlignment="Center" Foreground="Red"
+                                         Height="20" Width="20" Margin="5 15 40 15" />
+                        <TextBlock Grid.Column="1" Text="Icon to delete the tour clicked in the list"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Save Tour" Background="CornflowerBlue" Cursor="Arrow" Icon="FloppyOutline" Margin="5 5 40 5"/>
-                        <TextBlock Grid.Column="1" Text="Button to save the new/edited tour" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}"
+                                              Content="Save Tour" Background="CornflowerBlue" Cursor="Arrow"
+                                              Icon="FloppyOutline" Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1" Text="Button to save the new/edited tour" VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Import Data" Cursor="Arrow" Icon="Upload" Background="Gold"  Margin="5 5 40 5"/>
-                        <TextBlock Grid.Column="1" Text="Button to import data for the new/edited tour" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}"
+                                              Content="Import Data" Cursor="Arrow" Icon="Upload" Background="Gold"
+                                              Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1" Text="Button to import data for the new/edited tour"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Add Log" Cursor="Arrow" Icon="Plus" Margin="5 5 40 5"/>
-                        <TextBlock Grid.Column="1" Text="Button to get to form to create a new log for the expanded tour" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}"
+                                              Content="Add Log" Cursor="Arrow" Icon="Plus" Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1"
+                                   Text="Button to get to form to create a new log for the expanded tour"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}" Content="Save Log" Cursor="Arrow" Background="CornflowerBlue" Icon="FloppyOutline" Margin="5 5 40 5"/>
-                        <TextBlock Grid.Column="1" Text="Button to save the new/edited log for the expanded tour" VerticalAlignment="Center"/>
+                        <viewUtils:IconButton Grid.Column="0" Style="{StaticResource RoundedIconButton}"
+                                              Content="Save Log" Cursor="Arrow" Background="CornflowerBlue"
+                                              Icon="FloppyOutline" Margin="5 5 40 5" />
+                        <TextBlock Grid.Column="1" Text="Button to save the new/edited log for the expanded tour"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Width="40" Height="40" Margin="5 5 40 5" Cursor="Arrow" >
-                            <fa:ImageAwesome Icon="Pencil" Foreground="Black"  Margin="5"/>
+                        <Button Grid.Column="0" Width="40" Height="40" Margin="5 5 40 5" Cursor="Arrow">
+                            <fa:ImageAwesome Icon="Pencil" Foreground="Black" Margin="5" />
                         </Button>
-                        <TextBlock Grid.Column="1" Text="Button to get to the edit form for the clicked log of the expanded tour" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="Button to get to the edit form for the clicked log of the expanded tour"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
                 <ListBoxItem>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0" Width="40" Height="40" Margin="5 5 40 5" Cursor="Arrow" >
-                            <fa:ImageAwesome Icon="Trash" Foreground="Red" Margin="5"/>
+                        <Button Grid.Column="0" Width="40" Height="40" Margin="5 5 40 5" Cursor="Arrow">
+                            <fa:ImageAwesome Icon="Trash" Foreground="Red" Margin="5" />
                         </Button>
-                        <TextBlock Grid.Column="1" Text="Button to delete the clicked log of the expanded tour" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="Button to delete the clicked log of the expanded tour"
+                                   VerticalAlignment="Center" />
                     </Grid>
                 </ListBoxItem>
             </ListBox>
         </StackPanel>
     </Grid>
 </Window>
-    

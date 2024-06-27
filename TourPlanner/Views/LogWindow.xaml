@@ -3,42 +3,42 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:TourPlanner.Views"
         mc:Ignorable="d"
         Title="LogWindow" Height="450" Width="800">
     <Grid Margin="10">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Eingabebereich für neuen Log -->
         <StackPanel Orientation="Vertical" Grid.Row="0" Margin="10">
-            <Label Content="Date"/>
-            <DatePicker SelectedDateFormat="Short"  DisplayDateStart="2023-01-01" SelectedDate="{Binding TourDate, Mode=TwoWay, StringFormat=\{0:dd.MM.yy\}, UpdateSourceTrigger=PropertyChanged}"/>
+            <Label Content="Date" />
+            <DatePicker SelectedDateFormat="Short" DisplayDateStart="2023-01-01"
+                        SelectedDate="{Binding TourDate, Mode=TwoWay, StringFormat=\{0:dd.MM.yy\}, UpdateSourceTrigger=PropertyChanged}" />
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                 <StackPanel Orientation="Vertical" Width="200">
-                    <Label Content="Distance"/>
-                    <TextBox Text="{Binding Distance, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Distance" />
+                    <TextBox Text="{Binding Distance, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Width="200">
-                    <Label Content="Total Time"/>
-                    <TextBox Text="{Binding TotalTime, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Total Time" />
+                    <TextBox Text="{Binding TotalTime, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                 <StackPanel Orientation="Vertical" Width="200">
-                    <Label Content="Difficulty"/>
-                    <TextBox Text="{Binding Difficulty, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Difficulty" />
+                    <TextBox Text="{Binding Difficulty, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Width="200">
-                    <Label Content="Rating"/>
-                    <TextBox Text="{Binding Rating, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Rating" />
+                    <TextBox Text="{Binding Rating, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </StackPanel>
-            <Label Content="Comment"/>
-            <TextBox Height="100" Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
-            <Button Content="Save Log" Margin="10" HorizontalAlignment="Right" Click="SaveLogButton_Click"/>
+            <Label Content="Comment" />
+            <TextBox Height="100" Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+            <Button Content="Save Log" Margin="10" HorizontalAlignment="Right" Click="SaveLogButton_Click" />
         </StackPanel>
 
     </Grid>

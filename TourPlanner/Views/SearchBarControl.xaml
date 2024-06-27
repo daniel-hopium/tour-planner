@@ -11,7 +11,7 @@
             <Style.Resources>
                 <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                     <VisualBrush.Visual>
-                        <Label Content="Search..." Foreground="LightGray" Padding="5,0,0,0"/>
+                        <Label Content="Search..." Foreground="LightGray" Padding="5,0,0,0" />
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Style.Resources>
@@ -33,12 +33,12 @@
         <Border BorderBrush="Black" BorderThickness="1" CornerRadius="5" Padding="5" Background="White">
             <DockPanel VerticalAlignment="Center">
                 <!-- Search Icon -->
-                <fa:ImageAwesome Icon="Search" Width="20" Height="20" Margin="5,0,0,0" VerticalAlignment="Center"/>
-                
+                <fa:ImageAwesome Icon="Search" Width="20" Height="20" Margin="5,0,0,0" VerticalAlignment="Center" />
+
                 <!-- Search TextBox -->
-                <TextBox Width="200" Height="30"  VerticalAlignment="Center" Padding="5"
+                <TextBox Width="200" Height="30" VerticalAlignment="Center" Padding="5"
                          Style="{StaticResource TextBoxWithPlaceholder}" BorderThickness="0" Background="Transparent"
-                         Name="SearchTextBox" TextChanged="SearchTextBox_TextChanged"/>
+                         Name="SearchTextBox" TextChanged="SearchTextBox_TextChanged" />
             </DockPanel>
         </Border>
     </Grid>

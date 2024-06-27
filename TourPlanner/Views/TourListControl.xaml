@@ -1,12 +1,12 @@
 ﻿<UserControl x:Class="TourPlanner.Views.TourListControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:TourPlanner.Views"
              xmlns:viewModel="clr-namespace:TourPlanner.ViewModels"
              xmlns:fa="clr-namespace:FontAwesome.WPF;assembly=FontAwesome.WPF"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.DataContext>
         <viewModel:TourListControlViewModel />
@@ -17,12 +17,12 @@
         <StackPanel Margin="0,50,0,10">
             <!-- Search Bar -->
             <local:SearchBarControl SearchText="{Binding SearchText, Mode=TwoWay}" />
-            
+
             <!-- Tour List -->
             <TreeView x:Name="tourListBox" ItemsSource="{Binding FilteredTours}" MinHeight="20">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="TreeViewItem">
-                        <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded"/>
+                        <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded" />
                         <Style.Triggers>
                             <!-- DataTrigger, um den Hintergrund des Headers basierend auf der Variablen zu ändern -->
                             <DataTrigger Binding="{Binding IsEditMode}" Value="True">
@@ -41,44 +41,54 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <!--<StackPanel Orientation="Horizontal">-->
-                                    <TextBlock Text="{Binding Name}"  Padding="8" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding Name}" Padding="8" Grid.Column="0" />
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
-                                        <fa:ImageAwesome Icon="Pencil" Foreground="Blue" Margin="5,3" x:Name="TourEdit" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="18" Width="18" RenderTransformOrigin="1.724,0.347" Cursor="Hand"/>
-                                        <fa:ImageAwesome Icon="Print" Foreground="Green" Margin="5,3" x:Name="TourReport" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="18" Width="18" Cursor="Hand"/>
-                                        <fa:ImageAwesome Icon="FileArchiveOutline" Foreground="Gold" x:Name="TourExport" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Margin="5,3" Height="18" Width="18" Cursor="Hand"/>
-                                        <fa:ImageAwesome Icon="Trash" Foreground="Red" Margin="5,3" x:Name="TourDelete" MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="18" Width="18" Cursor="Hand"/>
+                                        <fa:ImageAwesome Icon="Pencil" Foreground="Blue" Margin="5,3" x:Name="TourEdit"
+                                                         MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="18"
+                                                         Width="18" RenderTransformOrigin="1.724,0.347" Cursor="Hand" />
+                                        <fa:ImageAwesome Icon="Print" Foreground="Green" Margin="5,3"
+                                                         x:Name="TourReport"
+                                                         MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="18"
+                                                         Width="18" Cursor="Hand" />
+                                        <fa:ImageAwesome Icon="FileArchiveOutline" Foreground="Gold"
+                                                         x:Name="TourExport"
+                                                         MouseLeftButtonDown="Tour_MouseLeftButtonDown" Margin="5,3"
+                                                         Height="18" Width="18" Cursor="Hand" />
+                                        <fa:ImageAwesome Icon="Trash" Foreground="Red" Margin="5,3" x:Name="TourDelete"
+                                                         MouseLeftButtonDown="Tour_MouseLeftButtonDown" Height="18"
+                                                         Width="18" Cursor="Hand" />
                                     </StackPanel>
                                     <!--</StackPanel>-->
                                 </Grid>
                             </TreeViewItem.Header>
                             <TextBlock Text="{Binding Description}" />
-                            <TextBlock Height="5"/>
+                            <TextBlock Height="5" />
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="From: " FontWeight="Bold"/>
+                                <TextBlock Text="From: " FontWeight="Bold" />
                                 <TextBlock Text="{Binding FromAddress}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="To: " FontWeight="Bold"/>
+                                <TextBlock Text="To: " FontWeight="Bold" />
                                 <TextBlock Text="{Binding ToAddress}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Transport Type: " FontWeight="Bold"/>
+                                <TextBlock Text="Transport Type: " FontWeight="Bold" />
                                 <TextBlock Text="{Binding TransportType}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Distance (km): " FontWeight="Bold"/>
+                                <TextBlock Text="Distance (km): " FontWeight="Bold" />
                                 <TextBlock Text="{Binding Distance}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Est. Time (min): " FontWeight="Bold"/>
+                                <TextBlock Text="Est. Time (min): " FontWeight="Bold" />
                                 <TextBlock Text="{Binding EstimatedTime}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Popularity: " FontWeight="Bold"/>
+                                <TextBlock Text="Popularity: " FontWeight="Bold" />
                                 <TextBlock Text="{Binding Popularity}" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Child-friendly: " FontWeight="Bold"/>
+                                <TextBlock Text="Child-friendly: " FontWeight="Bold" />
                                 <TextBlock Text="{Binding ChildFriendliness}" />
                             </StackPanel>
                         </TreeViewItem>

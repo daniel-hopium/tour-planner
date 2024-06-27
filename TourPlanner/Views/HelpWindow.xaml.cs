@@ -4,8 +4,8 @@ namespace TourPlanner.Views;
 
 public partial class HelpWindow : Window
 {
-    public HelpWindow()
-    {
-        InitializeComponent();
-    }
+  public HelpWindow()
+  {
+    InitializeComponent();
+  }
 }
